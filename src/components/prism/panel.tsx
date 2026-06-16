@@ -5,20 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
-const glassPanelVariants = cva(
+const panelVariants = cva(
   [
     "relative overflow-hidden",
-    "rounded-[1.25rem]",
-    "prism-glass",
-    "transition-all duration-300 ease-out",
+    "rounded-[0.75rem]",
+    "prism-panel",
+    "transition-all duration-200 ease-out",
   ].join(" "),
   {
     variants: {
       variant: {
         default: "",
-        bordered: "prism-gradient-border",
-        strong: "prism-glass-strong",
-        glow: "shadow-glow",
+        interactive: "prism-panel-hover",
+        transparent: "bg-transparent border-transparent",
       },
       padding: {
         none: "p-0",
@@ -35,31 +34,31 @@ const glassPanelVariants = cva(
   }
 );
 
-interface GlassPanelProps extends VariantProps<typeof glassPanelVariants> {
+interface PanelProps extends VariantProps<typeof panelVariants> {
   children: ReactNode;
   animate?: boolean;
   className?: string;
 }
 
 const entrance = {
-  initial: { opacity: 0, y: 16 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
   transition: {
-    duration: 0.5,
+    duration: 0.3,
     ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
   },
 } as const;
 
-export function GlassPanel({
+export function Panel({
   className,
   variant,
   padding,
   animate = true,
   children,
-}: GlassPanelProps) {
+}: PanelProps) {
   if (!animate) {
     return (
-      <div className={cn(glassPanelVariants({ variant, padding, className }))}>
+      <div className={cn(panelVariants({ variant, padding, className }))}>
         {children}
       </div>
     );
@@ -70,7 +69,7 @@ export function GlassPanel({
       initial={entrance.initial}
       animate={entrance.animate}
       transition={entrance.transition}
-      className={cn(glassPanelVariants({ variant, padding, className }))}
+      className={cn(panelVariants({ variant, padding, className }))}
     >
       {children}
     </motion.div>

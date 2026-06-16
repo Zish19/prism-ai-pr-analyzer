@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { GlassPanel } from "@/components/prism/glass-panel";
+import { Panel } from "@/components/prism/panel";
 
 interface MetricCardProps {
   icon: LucideIcon;
@@ -12,25 +12,25 @@ interface MetricCardProps {
   subtitle?: string;
   trend?: "up" | "down" | "neutral";
   trendValue?: string;
-  accentColor?: "purple" | "cyan" | "success" | "warning" | "danger";
+  accentColor?: "blue" | "success" | "warning" | "danger" | "muted";
   delay?: number;
   className?: string;
 }
 
 const accentMap = {
-  purple: "text-[var(--prism-purple)]",
-  cyan: "text-[var(--prism-cyan)]",
+  blue: "text-[var(--prism-blue)]",
   success: "text-[var(--prism-success)]",
   warning: "text-[var(--prism-warning)]",
   danger: "text-[var(--prism-danger)]",
+  muted: "text-muted-foreground",
 } as const;
 
 const accentBgMap = {
-  purple: "bg-[var(--prism-purple)]/10",
-  cyan: "bg-[var(--prism-cyan)]/10",
+  blue: "bg-[var(--prism-blue)]/10",
   success: "bg-[var(--prism-success)]/10",
   warning: "bg-[var(--prism-warning)]/10",
   danger: "bg-[var(--prism-danger)]/10",
+  muted: "bg-muted",
 } as const;
 
 const trendIcons = {
@@ -52,35 +52,35 @@ export function MetricCard({
   subtitle,
   trend,
   trendValue,
-  accentColor = "purple",
+  accentColor = "blue",
   delay = 0,
   className,
 }: MetricCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.97 }}
+      initial={{ opacity: 0, y: 10, scale: 0.99 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
-        duration: 0.5,
+        duration: 0.4,
         delay,
         ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
       }}
       className={className}
     >
-      <GlassPanel
-        variant="bordered"
+      <Panel
+        variant="interactive"
         padding="default"
         animate={false}
-        className="group hover:shadow-elevation-md hover:bg-white/[0.04] h-full"
+        className="group h-full flex flex-col"
       >
         <div className="flex items-start justify-between">
           <div
             className={cn(
-              "flex size-10 items-center justify-center rounded-xl",
+              "flex size-9 items-center justify-center rounded-lg",
               accentBgMap[accentColor]
             )}
           >
-            <Icon className={cn("size-5", accentMap[accentColor])} />
+            <Icon className={cn("size-4.5", accentMap[accentColor])} />
           </div>
 
           {trend && (
@@ -97,13 +97,13 @@ export function MetricCard({
         </div>
 
         <div className="mt-4 space-y-1">
-          <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="text-2xl font-bold tracking-tight">{value}</p>
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="text-2xl font-semibold tracking-tight">{value}</p>
           {subtitle && (
             <p className="text-xs text-muted-foreground">{subtitle}</p>
           )}
         </div>
-      </GlassPanel>
+      </Panel>
     </motion.div>
   );
 }

@@ -1,171 +1,270 @@
 "use client";
 
-import { motion } from "motion/react";
-import { Shield, Gauge, GitPullRequest, Sparkles } from "lucide-react";
+import Image from "next/image";
+import {
+  FileCode,
+  FileBox,
+  FilePlus,
+  ShieldAlert,
+  Zap,
+  CheckCircle2,
+  GitPullRequest,
+  Search,
+  Activity,
+} from "lucide-react";
+import { BRAND } from "@/constants/brand";
 import { Button } from "@/components/ui/button";
-import { GlassPanel } from "@/components/prism/glass-panel";
-import { MetricCard } from "@/components/prism/metric-card";
-import { SectionHeading } from "@/components/prism/section-heading";
 import { Badge } from "@/components/ui/badge";
+import { Panel } from "@/components/prism/panel";
+import { MetricCard } from "@/components/prism/metric-card";
+import {
+  MOCK_REVIEW,
+  MOCK_FILES,
+} from "@/data/mock-review";
+import { MOCK_DIFF, MOCK_HEADER_DIFF, type FileDiff } from "@/data/mock-diff";
+import { cn } from "@/lib/utils";
 
-/* -------------------------------------------------------------------
-   Container animation orchestrator
-   ------------------------------------------------------------------- */
-const stagger = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
-  },
-};
+export default function AppHome() {
+  const pr = MOCK_REVIEW.pr;
+  const scores = MOCK_REVIEW.scores;
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
-  },
-} as const;
-
-/* ===================================================================
-   Page
-   =================================================================== */
-export default function Home() {
   return (
-    <div className="relative flex min-h-dvh flex-col items-center justify-center overflow-hidden">
-      {/* ---- Animated gradient background ---- */}
-      <div className="pointer-events-none fixed inset-0 -z-10">
-        {/* Base dark */}
-        <div className="absolute inset-0 bg-background" />
-
-        {/* Grid + radial glow */}
-        <div className="absolute inset-0 prism-grid-bg" />
-
-        {/* Noise */}
-        <div className="absolute inset-0 prism-noise" />
-
-        {/* Orbiting gradient blobs */}
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/3">
-          <div className="h-[600px] w-[900px] rounded-full bg-[var(--prism-purple)] opacity-[0.07] blur-[120px]" />
-        </div>
-        <div className="absolute right-0 top-1/2 translate-x-1/4 -translate-y-1/2">
-          <div className="h-[400px] w-[500px] rounded-full bg-[var(--prism-cyan)] opacity-[0.05] blur-[100px]" />
-        </div>
-      </div>
-
-      {/* ---- Content ---- */}
-      <motion.main
-        variants={stagger}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 flex w-full max-w-5xl flex-col items-center gap-16 px-6 py-24 sm:py-32"
-      >
-        {/* === Hero === */}
-        <motion.div variants={fadeUp} className="flex flex-col items-center gap-6 text-center">
-          {/* Status badge */}
-          <Badge variant="default" size="lg" className="gap-2">
-            <Sparkles className="size-3.5" />
-            Phase 1 — Foundation Ready
-          </Badge>
-
-          {/* Logo */}
-          <h1 className="text-7xl font-extrabold tracking-[-0.04em] sm:text-8xl lg:text-9xl">
-            <span className="prism-gradient-text">PRISM</span>
-          </h1>
-
-          {/* Tagline */}
-          <p className="max-w-md text-lg text-muted-foreground sm:text-xl">
-            AI-Powered Pull Request Intelligence
-          </p>
-
-          {/* CTA */}
-          <div className="mt-4 flex gap-3">
-            <Button variant="gradient" size="xl">
-              <GitPullRequest className="size-5" />
-              Analyze Pull Request
-            </Button>
-            <Button variant="outline" size="xl">
-              Learn More
-            </Button>
-          </div>
-        </motion.div>
-
-        {/* === Section heading === */}
-        <SectionHeading
-          title="Real-time Analysis"
-          subtitle="Instant AI-powered insights across security, performance, and code quality dimensions."
-          gradient
-          delay={0.4}
-        />
-
-        {/* === Metric cards === */}
-        <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
-          <MetricCard
-            icon={Shield}
-            label="Security Score"
-            value="94"
-            subtitle="2 low-risk issues found"
-            trend="up"
-            trendValue="+3"
-            accentColor="success"
-            delay={0.5}
-          />
-          <MetricCard
-            icon={Gauge}
-            label="Code Quality"
-            value="A+"
-            subtitle="Exceeds team standards"
-            trend="up"
-            trendValue="+12%"
-            accentColor="purple"
-            delay={0.6}
-          />
-          <MetricCard
-            icon={GitPullRequest}
-            label="Merge Probability"
-            value="87%"
-            subtitle="Based on 14 analysis signals"
-            trend="neutral"
-            accentColor="cyan"
-            delay={0.7}
-          />
-        </div>
-
-        {/* === Glass panel preview === */}
-        <GlassPanel
-          variant="bordered"
-          padding="lg"
-          className="w-full max-w-2xl"
-        >
-          <div className="flex flex-col items-center gap-4 text-center">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-[var(--prism-purple)]/10">
-              <Sparkles className="size-6 text-[var(--prism-purple)]" />
+    <div className="flex h-screen flex-col bg-background text-foreground overflow-hidden">
+      {/* Top Navigation */}
+      <header className="flex h-14 shrink-0 items-center justify-between border-b px-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <div className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <Activity className="size-4" />
             </div>
-            <h3 className="text-lg font-semibold">
-              Design System Initialized
+            <span className="font-semibold tracking-tight">{BRAND.shortName}</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <GitPullRequest className="size-4" />
+            <span>{pr.repo}</span>
+            <span className="text-border">/</span>
+            <span className="text-foreground font-medium">#{pr.number}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="sm" className="h-8">
+            History
+          </Button>
+          <div className="h-6 w-px bg-border" />
+          <div className="flex items-center gap-2 text-sm">
+            <div className="relative size-6 overflow-hidden rounded-full bg-secondary">
+              <Image src={pr.authorAvatar} alt={pr.author} fill className="object-cover" />
+            </div>
+            <span className="text-muted-foreground">{pr.author}</span>
+          </div>
+        </div>
+      </header>
+
+      {/* Main App Area */}
+      <main className="flex flex-1 overflow-hidden">
+        
+        {/* Left Column: Context & Files */}
+        <aside className="w-[280px] shrink-0 border-r flex flex-col bg-sidebar/30">
+          <div className="p-4 border-b">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-2 size-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  defaultValue={`https://github.com/${pr.repo}/pull/${pr.number}`}
+                  className="w-full h-8 rounded-md border bg-input/50 pl-8 pr-3 text-xs outline-none focus:ring-1 focus:ring-primary focus:bg-background transition-colors"
+                />
+              </div>
+              <Button size="sm" className="h-8 px-3 text-xs">Analyze</Button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3">
+            <div className="mb-4 px-1">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                Pull Request
+              </h3>
+              <p className="text-sm font-medium leading-snug mb-2">{pr.title}</p>
+              <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+                <div className="flex items-center gap-1.5">
+                  <Badge variant="success" size="sm" className="font-normal">Open</Badge>
+                </div>
+                <span>{pr.commits} commits</span>
+              </div>
+              <div className="flex gap-3 text-xs">
+                <span className="text-emerald-500 font-medium">+{pr.additions}</span>
+                <span className="text-rose-500 font-medium">-{pr.deletions}</span>
+              </div>
+            </div>
+
+            <div className="px-1">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                Files Changed ({pr.filesChanged})
+              </h3>
+              <ul className="space-y-0.5">
+                {MOCK_FILES.map((file) => (
+                  <li key={file.path}>
+                    <button className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-xs hover:bg-secondary text-left group">
+                      <div className="flex items-center gap-2 truncate">
+                        {file.status === "added" ? (
+                          <FilePlus className="size-3.5 text-emerald-500 shrink-0" />
+                        ) : (
+                          <FileCode className="size-3.5 text-muted-foreground shrink-0" />
+                        )}
+                        <span className="truncate group-hover:text-foreground transition-colors text-muted-foreground">
+                          {file.path.split("/").pop()}
+                        </span>
+                      </div>
+                      <div className="flex gap-1.5 shrink-0 ml-2">
+                        {file.additions > 0 && <span className="text-emerald-500">+{file.additions}</span>}
+                        {file.deletions > 0 && <span className="text-rose-500">-{file.deletions}</span>}
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </aside>
+
+        {/* Center Column: Diff Viewer */}
+        <div className="flex-1 flex flex-col bg-background min-w-0 border-r">
+          <div className="flex items-center h-10 border-b px-4 shrink-0 bg-sidebar/50">
+            <h2 className="text-sm font-medium">Diff Preview</h2>
+            <div className="ml-auto flex gap-2">
+              <Badge variant="secondary" className="font-normal text-muted-foreground border-transparent">
+                Viewing 2 of 5 files
+              </Badge>
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto bg-[#0d0d12]">
+            {/* Diff 1 */}
+            <DiffViewer diff={MOCK_DIFF} />
+            {/* Diff 2 */}
+            <DiffViewer diff={MOCK_HEADER_DIFF} />
+          </div>
+        </div>
+
+        {/* Right Column: Review Metrics */}
+        <aside className="w-[320px] shrink-0 flex flex-col bg-sidebar/30 overflow-y-auto">
+          <div className="p-5 border-b">
+            <h2 className="text-base font-semibold mb-4">AI Review Summary</h2>
+            <Panel variant="interactive" className="p-4 border-emerald-500/20 bg-emerald-500/5">
+              <div className="flex justify-between items-end mb-2">
+                <span className="text-sm font-medium text-emerald-500">Merge Probability</span>
+                <span className="text-3xl font-bold text-emerald-500">{MOCK_REVIEW.mergeProbability}%</span>
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                {MOCK_REVIEW.summary}
+              </p>
+            </Panel>
+          </div>
+
+          <div className="p-5 flex-1">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-4">
+              Analysis Dimensions
             </h3>
-            <p className="max-w-sm text-sm text-muted-foreground">
-              Theme tokens, glassmorphism primitives, and component architecture
-              are ready. Phase 2 will build the full analysis dashboard.
-            </p>
-            <div className="mt-2 flex flex-wrap justify-center gap-2">
-              <Badge variant="success" glow>Active</Badge>
-              <Badge variant="default">Next.js 16</Badge>
-              <Badge variant="default">TypeScript</Badge>
-              <Badge variant="default">Tailwind v4</Badge>
-              <Badge variant="default">shadcn/ui</Badge>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              <MetricCard
+                icon={ShieldAlert}
+                label="Security"
+                value={scores.security.score}
+                accentColor={scores.security.score > 90 ? "success" : "warning"}
+                trend="up"
+                trendValue="+2"
+              />
+              <MetricCard
+                icon={FileBox}
+                label="Architecture"
+                value={scores.architecture.score}
+                accentColor="blue"
+              />
+              <MetricCard
+                icon={CheckCircle2}
+                label="Code Quality"
+                value="A"
+                accentColor="blue"
+              />
+              <MetricCard
+                icon={Zap}
+                label="Performance"
+                value={scores.performance.score}
+                accentColor="success"
+              />
+            </div>
+
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              Key Findings
+            </h3>
+            <div className="space-y-3">
+              {scores.security.issues.map((issue) => (
+                <Panel key={issue.id} className="p-3">
+                  <div className="flex items-start gap-2 mb-1.5">
+                    <Badge variant={issue.severity === "warning" ? "warning" : "secondary"} size="sm" className="px-1.5">
+                      {issue.severity}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground truncate">{issue.file}:{issue.line}</span>
+                  </div>
+                  <p className="text-xs leading-relaxed">
+                    {issue.message}
+                  </p>
+                </Panel>
+              ))}
             </div>
           </div>
-        </GlassPanel>
+        </aside>
 
-        {/* === Footer note === */}
-        <motion.p
-          variants={fadeUp}
-          className="text-xs text-muted-foreground/60"
-        >
-          PRISM v0.1.0 · Phase 1 Foundation
-        </motion.p>
-      </motion.main>
+      </main>
+    </div>
+  );
+}
+
+function DiffViewer({ diff }: { diff: FileDiff }) {
+  return (
+    <div className="mb-6">
+      <div className="sticky top-0 flex items-center h-10 px-4 bg-[#12131a] border-b border-border/50 text-sm font-mono text-muted-foreground shadow-sm">
+        {diff.path}
+      </div>
+      <div className="font-mono text-[13px] leading-relaxed tracking-tight py-2 select-text">
+        {diff.hunks.map((hunk, hIdx) => (
+          <div key={hIdx}>
+            <div className="px-4 py-1 text-[#6b7280] bg-[#12131a]/50 select-none">
+              {hunk.header}
+            </div>
+            {hunk.lines.map((line, lIdx) => (
+              <div
+                key={lIdx}
+                className={cn(
+                  "flex hover:bg-white/[0.02]",
+                  line.type === "add" && "bg-emerald-500/10 hover:bg-emerald-500/[0.15]",
+                  line.type === "remove" && "bg-rose-500/10 hover:bg-rose-500/[0.15]"
+                )}
+              >
+                <div className="w-12 shrink-0 text-right pr-3 text-[#6b7280] select-none border-r border-border/50 bg-[#12131a]/30">
+                  {line.lineOld || ""}
+                </div>
+                <div className="w-12 shrink-0 text-right pr-3 text-[#6b7280] select-none border-r border-border/50 bg-[#12131a]/30">
+                  {line.lineNew || ""}
+                </div>
+                <div className="w-6 shrink-0 text-center select-none">
+                  {line.type === "add" && <span className="text-emerald-500">+</span>}
+                  {line.type === "remove" && <span className="text-rose-500">-</span>}
+                </div>
+                <div className={cn(
+                  "flex-1 whitespace-pre pl-2",
+                  line.type === "add" && "text-emerald-300",
+                  line.type === "remove" && "text-rose-300",
+                  line.type === "context" && "text-[#e4e4e8]"
+                )}>
+                  {line.content}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

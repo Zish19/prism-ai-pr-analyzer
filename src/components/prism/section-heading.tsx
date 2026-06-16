@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 interface SectionHeadingProps {
   title: string;
   subtitle?: string;
-  gradient?: boolean;
   accentLine?: boolean;
   align?: "left" | "center";
   delay?: number;
@@ -16,7 +15,6 @@ interface SectionHeadingProps {
 export function SectionHeading({
   title,
   subtitle,
-  gradient = false,
   accentLine = true,
   align = "center",
   delay = 0,
@@ -40,15 +38,14 @@ export function SectionHeading({
       {accentLine && (
         <div
           className={cn(
-            "h-px w-12 bg-gradient-to-r from-[var(--prism-purple)] to-[var(--prism-cyan)]",
+            "h-0.5 w-10 bg-primary/80 rounded-full",
             align === "center" && "mx-auto"
           )}
         />
       )}
       <h2
         className={cn(
-          "text-2xl font-bold tracking-tight sm:text-3xl",
-          gradient && "prism-gradient-text"
+          "text-xl font-semibold tracking-tight sm:text-2xl text-foreground"
         )}
       >
         {title}

@@ -12,11 +12,11 @@ const cardVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-card text-card-foreground border border-border shadow-elevation-sm",
-        glass:
-          "prism-glass text-foreground shadow-glass",
+          "bg-card text-card-foreground border border-border shadow-subtle",
+        surface:
+          "bg-card text-card-foreground border border-border",
         elevated:
-          "bg-card text-card-foreground border border-border shadow-elevation-md hover:shadow-elevation-lg",
+          "bg-card text-card-foreground border border-border shadow-elevated hover:shadow-subtle",
         ghost:
           "bg-transparent text-foreground",
       },

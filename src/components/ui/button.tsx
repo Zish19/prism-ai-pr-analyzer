@@ -16,19 +16,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-elevation-sm hover:bg-primary/85 active:scale-[0.98]",
-        gradient:
-          "bg-gradient-to-r from-[var(--prism-purple)] to-[var(--prism-cyan)] text-white shadow-glow hover:shadow-glow-purple active:scale-[0.98] hover:brightness-110",
+          "bg-primary text-primary-foreground shadow-subtle hover:bg-primary/90 active:scale-[0.98]",
         outline:
-          "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground active:scale-[0.98]",
+          "border border-border bg-transparent hover:bg-secondary hover:text-secondary-foreground active:scale-[0.98]",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:scale-[0.98]",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground",
+          "hover:bg-secondary hover:text-secondary-foreground",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 active:scale-[0.98]",
-        glass:
-          "prism-glass hover:bg-white/[0.06] text-foreground active:scale-[0.98]",
         link: "text-primary underline-offset-4 hover:underline p-0 h-auto",
       },
       size: {
