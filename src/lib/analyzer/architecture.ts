@@ -1,48 +1,65 @@
-import type { Finding, AnalyzerContext } from "./types";
+import { FileDiff } from "@/data/mock-diff";
+import { AnalyzerEngine, Finding } from "./types";
 
-export function analyzeArchitecture(context: AnalyzerContext): Finding[] {
-  const findings: Finding[] = [];
-  
-  let currentFuncStart = -1;
-  
-  context.lines.forEach((line, index) => {
-    // Basic function start detection (e.g. `int func_name(`)
-    if (/^[a-zA-Z_][a-zA-Z0-9_]*\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(/.test(line)) {
-      currentFuncStart = index;
-    }
-    
-    // Warn if a function exceeds ~40 lines in a diff hunk 
-    // (In reality this requires AST parsing, but for diff analysis we approximate)
-    if (currentFuncStart !== -1 && (index - currentFuncStart) > 40) {
-      if ((index - currentFuncStart) % 40 === 1) { // Only report once per function
+export const architectureEngine: AnalyzerEngine = {
+  name: "architecture",
+  analyze: (files: FileDiff[]): Finding[] => {
+    const findings: Finding[] = [];
+
+    for (const file of files) {
+      let maxLine = 0;
+      let maxNesting = 0;
+      let currentNesting = 0;
+
+      for (const hunk of file.hunks) {
+        for (const line of hunk.lines) {
+          if (line.lineNew && line.lineNew > maxLine) {
+            maxLine = line.lineNew;
+          }
+
+          if (line.type !== "remove") {
+            const text = line.content;
+            // Naive bracket counting for nesting
+            const opens = (text.match(/\{/g) || []).length;
+            const closes = (text.match(/\}/g) || []).length;
+            
+            currentNesting += opens;
+            currentNesting -= closes;
+            
+            if (currentNesting > maxNesting) {
+              maxNesting = currentNesting;
+            }
+
+            if (currentNesting > 4 && line.type === "add") {
+              findings.push({
+                dimension: "architecture",
+                severity: "medium",
+                title: "Deep Nesting",
+                description: "Deeply nested logic detected (level > 4). This is a probable architectural risk indicating the function should be refactored.",
+                file: file.path,
+                line: line.lineNew,
+                id: `arch-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+              });
+              // Reset slightly to prevent spamming every line inside
+              currentNesting = 3; 
+            }
+          }
+        }
+      }
+
+      if (maxLine > 500) {
         findings.push({
-          id: `arch-len-${context.file}-${index}`,
           dimension: "architecture",
           severity: "medium",
-          message: "Function exceeds recommended length (40 lines). Consider breaking it into smaller, composable units.",
-          file: context.file,
-          line: context.startIndex + currentFuncStart,
+          title: "Huge File",
+          description: `This file has exceeded 500 lines (detected around line ${maxLine}). Consider breaking it down into smaller modules.`,
+          file: file.path,
+          line: maxLine,
+          id: `arch-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         });
       }
     }
-    
-    if (line.trim() === "}") {
-      currentFuncStart = -1;
-    }
-    
-    // Deep nesting detection
-    const indentLevel = (line.match(/^\s+/) || [""])[0].length / 4; // assuming 4 spaces
-    if (indentLevel > 4) {
-      findings.push({
-        id: `arch-nest-${context.file}-${index}`,
-        dimension: "architecture",
-        severity: "medium",
-        message: `High cyclomatic complexity. Indentation level ${indentLevel} exceeds recommended maximum of 4.`,
-        file: context.file,
-        line: context.startIndex + index,
-      });
-    }
-  });
-  
-  return findings;
-}
+
+    return findings;
+  },
+};

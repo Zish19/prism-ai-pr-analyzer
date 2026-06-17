@@ -1,24 +1,68 @@
 "use client";
 
-import { ShieldAlert, FileBox, CheckCircle2, Zap } from "lucide-react";
+import { ShieldAlert, FileBox, CheckCircle2, Zap, Download, Copy, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { MetricCard } from "@/components/prism/metric-card";
 import { BlueprintCrosshair } from "@/components/prism/blueprint-crosshair";
 import type { ReviewResult } from "@/lib/analyzer/types";
+import { generateMarkdownReport } from "@/lib/exporters/markdown";
+import { generateJSONReport } from "@/lib/exporters/json";
+import { useState } from "react";
 
 interface MetricsPanelProps {
   review: ReviewResult;
+  repoPath: string;
 }
 
-export function MetricsPanel({ review }: MetricsPanelProps) {
+export function MetricsPanel({ review, repoPath }: MetricsPanelProps) {
   const scores = review.scores;
+  const [copiedMd, setCopiedMd] = useState(false);
+
+  const handleCopyMarkdown = async () => {
+    const md = generateMarkdownReport(repoPath, review);
+    await navigator.clipboard.writeText(md);
+    setCopiedMd(true);
+    setTimeout(() => setCopiedMd(false), 2000);
+  };
+
+  const handleDownloadJSON = () => {
+    const json = generateJSONReport(repoPath, review);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `prism-report-${repoPath.replace("/", "-")}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="flex h-full flex-col bg-background overflow-y-auto relative">
       <div className="p-5 border-b border-border/50 bg-secondary">
-        <h2 className="text-[11px] font-mono tracking-[0.2em] uppercase text-muted-foreground mb-4">
-          AI Review Summary
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[11px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
+            AI Review Summary
+          </h2>
+          <div className="flex gap-2">
+            <button 
+              onClick={handleCopyMarkdown}
+              className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors px-2 py-1 border border-border/50 bg-background hover:bg-card"
+            >
+              {copiedMd ? <Check className="size-3 text-emerald-500" /> : <Copy className="size-3" />}
+              {copiedMd ? "COPIED" : "MD"}
+            </button>
+            <button 
+              onClick={handleDownloadJSON}
+              className="text-[9px] uppercase tracking-widest font-mono text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors px-2 py-1 border border-border/50 bg-background hover:bg-card"
+            >
+              <Download className="size-3" />
+              JSON
+            </button>
+          </div>
+        </div>
+        
         <div className="border border-emerald-500/30 bg-emerald-500/[0.02] p-4 relative overflow-hidden">
           <BlueprintCrosshair className="absolute top-0 left-0 opacity-50" />
           <BlueprintCrosshair className="absolute top-0 right-0 opacity-50" />
@@ -33,7 +77,7 @@ export function MetricsPanel({ review }: MetricsPanelProps) {
             <span className="text-5xl font-mono tracking-tighter text-emerald-500">{review.mergeProbability}%</span>
           </div>
           <div className="text-[11px] font-bold text-emerald-500 mb-2 tracking-[0.2em] uppercase">
-            {review.riskLevel === "Low" ? "Ready to Merge" : review.riskLevel.toUpperCase() + " RISK"}
+            {review.riskLevel === "Safe" ? "Ready to Merge" : review.riskLevel.toUpperCase() + " RISK"}
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed font-mono">
             {review.summary}
@@ -85,11 +129,14 @@ export function MetricsPanel({ review }: MetricsPanelProps) {
                     {issue.severity}
                   </Badge>
                   <span className="text-[10px] font-mono text-muted-foreground truncate pt-0.5 ml-auto">
-                    L{issue.line}
+                    {issue.file && issue.line ? `L${issue.line}` : ''}
                   </span>
                 </div>
-                <p className="text-xs leading-relaxed font-mono text-foreground">
-                  {issue.message}
+                <div className="text-xs font-bold leading-relaxed font-mono text-foreground mb-1">
+                  {issue.title}
+                </div>
+                <p className="text-xs leading-relaxed font-mono text-muted-foreground">
+                  {issue.description}
                 </p>
               </div>
             ));

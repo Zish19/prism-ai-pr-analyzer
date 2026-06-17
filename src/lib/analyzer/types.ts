@@ -1,13 +1,21 @@
 export type Severity = "critical" | "high" | "medium" | "low";
 export type Dimension = "security" | "performance" | "architecture" | "quality";
 
+import type { FileDiff } from "@/data/mock-diff";
+
+export interface AnalyzerEngine {
+  name: string;
+  analyze: (files: FileDiff[]) => Finding[];
+}
+
 export interface Finding {
   id: string;
   dimension: Dimension;
   severity: Severity;
-  message: string;
-  file: string;
-  line: number;
+  title: string;
+  description: string;
+  file?: string;
+  line?: number;
 }
 
 export interface DimensionScore {
@@ -18,7 +26,8 @@ export interface DimensionScore {
 export interface ReviewResult {
   summary: string;
   mergeProbability: number;
-  riskLevel: "Critical" | "High" | "Medium" | "Low";
+  riskScore: number;
+  riskLevel: "Critical" | "Risky" | "Moderate" | "Safe";
   scores: {
     security: DimensionScore;
     performance: DimensionScore;
@@ -26,10 +35,4 @@ export interface ReviewResult {
     quality: DimensionScore;
   };
   totalIssues: number;
-}
-
-export interface AnalyzerContext {
-  file: string;
-  lines: string[];
-  startIndex: number; // For diff lines mapping
 }

@@ -1,107 +1,125 @@
 # PRISM 
-## AI-Powered Pull Request Analyzer
+## Autonomous Pull Request Intelligence System
 
-PRISM is an advanced, automated intelligence engine designed to intercept and analyze pull requests before they merge. It detects security vulnerabilities, performance bottlenecks, architectural flaws, and code quality regressions, presenting them in a highly optimized, brutalist-inspired dashboard interface.
-
----
-
-## 1. Core Architecture
-
-PRISM is built on a modern, high-performance web stack prioritized for immediate feedback and uncompromised aesthetic delivery.
-
-- **Framework**: Next.js 16 (App Router)
-- **Styling**: Tailwind CSS v4 with a custom Brutalist Design System
-- **Animation**: Framer Motion for scroll-linked and micro-interaction states
-- **Syntax Highlighting**: Shiki for highly accurate token rendering
-- **Authentication**: Clerk for enterprise-grade user management
-- **Components**: Radix UI / Shadcn for accessible primitives
+PRISM is a high-performance, automated intelligence engine designed to intercept, analyze, and score GitHub pull requests in real-time. It acts as an autonomous senior engineer, executing static analysis across four critical dimensions: Security, Performance, Architecture, and Quality. Encased in a brutalist, typography-driven interface, PRISM provides immediate, uncompromised feedback on code changes.
 
 ---
 
-## 2. Intelligence Engines
+## Architecture & Stack
 
-PRISM evaluates pull requests across four distinct vectors, known as Heuristics or Dimensions:
+PRISM is engineered for speed, utilizing a modern edge-ready web stack.
 
-### Security
-Identifies critical vulnerabilities that expose systems to external threat vectors.
-- Hardcoded secrets and API keys
-- Unsafe dynamic evaluations (eval, setTimeout with strings)
-- Command injection vectors
-- Insecure direct object references
-
-### Performance
-Detects hidden runtime costs and inefficient computational logic.
-- O(N^2) or higher nested loop complexities
-- Expensive memory allocations within inner loops
-- Blocking synchronous operations
-
-### Architecture
-Evaluates structural integrity and maintainability patterns.
-- Excessive function length and cyclomatic complexity
-- Deep control flow nesting
-- Violation of Single Responsibility Principles
-
-### Quality
-Ensures adherence to clean code standards and repository conventions.
-- Unresolved TODO or FIXME statements
-- Residual debugging artifacts (console.log)
-- Ambiguous variable naming conventions
+- **Core Framework**: Next.js 16 (App Router) with Turbopack
+- **Styling**: Tailwind CSS v4 featuring a custom Brutalist Design System
+- **Animation Engine**: Framer Motion for 60FPS hardware-accelerated micro-interactions
+- **Physics Engine**: Matter.js for custom interactive DOM elements
+- **Syntax Analysis**: Shiki for granular tokenization and diff rendering
+- **Authentication**: Clerk for secure, stateless user session management
+- **Component Primitives**: Radix UI for unstyled, accessible component foundations
 
 ---
 
-## 3. The Dashboard
+## The Intelligence Engine
 
-The PRISM dashboard provides a unified command center for PR review.
+At the core of PRISM lies a deterministic, highly-tuned heuristic analysis pipeline. It evaluates pull requests instantly without relying on slow external inference APIs. The system is split into four discrete engines:
 
-- **Command Palette**: Press `CTRL+K` (or `CMD+K`) to rapidly navigate between analysis runs, toggle the sidebar, or switch view modes.
-- **Diff Viewer**: High-fidelity dual-pane or unified diff rendering powered by Shiki, allowing granular inspection of flagged lines.
-- **Metrics Panel**: A statistical breakdown of the AI review, including severity distribution, dimension scores, and an overarching "Merge Probability" score.
+### Security Engine
+Identifies attack vectors and cryptographic mishandling before they merge into production.
+- Detects hardcoded secrets, API keys, and AWS credentials
+- Flags unsafe dynamic execution patterns (eval, setTimeout)
+- Identifies naive string concatenation leading to injection vulnerabilities
+- Detects leaked JWT tokens within source control
+
+### Performance Engine
+Analyzes cyclomatic complexity and runtime inefficiencies.
+- Detects O(N^2) complexity via heavily nested iteration
+- Identifies N+1 query patterns and network calls inside loops
+- Flags blocking synchronous operations
+
+### Architecture Engine
+Enforces structural integrity and long-term maintainability.
+- Analyzes function cyclomatic depth and nesting levels
+- Detects monolithic files exceeding standard threshold limits
+- Identifies violations of the Single Responsibility Principle
+
+### Quality Engine
+Ensures adherence to enterprise-grade code cleanliness standards.
+- Flags residual debugging artifacts and console statements
+- Detects unresolved architectural debt (TODO, FIXME, HACK)
+- Identifies the use of the `any` type in TypeScript environments
+- Flags single-letter variable declarations and commented-out dead code
 
 ---
 
-## 4. Setup & Deployment
+## Core Interface
 
-To run PRISM locally, ensure you have Node.js 20+ and pnpm installed.
+The PRISM dashboard provides an uncompromising, data-dense command center.
 
-### Installation
+- **Global Command Palette**: Instantly navigable via `CTRL+K` (or `CMD+K`).
+- **Interactive Diff Viewer**: Real-time split or unified diff visualization with precise line-level syntax highlighting.
+- **Metrics Telemetry Panel**: A comprehensive statistical breakdown of the AI review, including severity distribution and an overarching Merge Probability index.
+- **Report Exporters**: Single-click generation of Markdown and JSON analysis reports for seamless integration into external workflows.
+- **Interactive Physics Topology**: A custom Matter.js integration on the landing page simulating unconstrained 2D rigid body physics for dynamic aesthetic presentation.
+
+---
+
+## Deployment & Setup
+
+Ensure a local environment with Node.js 20+ and pnpm.
+
+### 1. Initialization
 
 ```bash
-# Clone the repository
 git clone https://github.com/Zish19/prism-ai-pr-analyzer.git
-
-# Navigate into the project
 cd prism-ai-pr-analyzer
-
-# Install dependencies
 pnpm install
 ```
 
-### Environment Configuration
+### 2. Environment Configuration
 
-Create a `.env.local` file in the root directory and configure your Clerk Authentication keys.
+Create a `.env.local` file in the root directory. You must supply your Clerk keys and an optional GitHub Personal Access Token to expand rate limits.
 
 ```env
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
+
+# Optional: Increase GitHub API Rate Limits
+GITHUB_TOKEN=ghp_...
 ```
 
-### Execution
+### 3. Execution
 
-Start the Turbopack development server:
+Launch the Turbopack development server:
 
 ```bash
 pnpm dev
 ```
 
-Navigate to `http://localhost:3000` to access the application.
+Navigate to `http://localhost:3000` to access the console.
 
 ---
 
-## 5. Design Philosophy
+## Design Philosophy
 
-PRISM rejects generic, overly-softened corporate UI patterns. It embraces a technical, brutalist aesthetic defined by sharp corners, high-contrast monospace typography, and subtle grid backgrounds. 
+PRISM rejects the conventional, overly-softened corporate aesthetic. It embraces a brutalist design language defined by sharp edges, high-contrast typography, and explicit grid structures. 
 
-The interface communicates raw data efficiently, honoring the precision required in software engineering. The dual-theme support (Dark Mode and Creamy Light Mode) ensures maximum readability across any environment without sacrificing brand identity.
+The interface is built to communicate raw data efficiently, honoring the precision required in software engineering. With seamless support for both a high-contrast Dark Mode and an engineered Cream Light Mode, PRISM ensures maximum legibility across any technical environment.
 
 ---
-*Developed by the PRISM Team. 2026.*
+
+## Phase 8 / Future Roadmap
+
+The current iteration of PRISM relies on fast heuristic processing. Future upgrades will address known architectural constraints:
+
+1. **AST & Tree-Sitter Integration**
+   - *Current Limitation*: Regex heuristics lack deep syntax understanding.
+   - *Phase 8 Upgrade*: Implementing AST parsing to unlock true architectural analysis.
+2. **Context-Aware Repository Scanning**
+   - *Current Limitation*: Diff-only analysis lacks unchanged context, risking false positives.
+   - *Phase 8 Upgrade*: Expanding analysis scopes beyond the patch to evaluate full module impact.
+3. **LLM Reasoning Layer**
+   - *Current Limitation*: Heuristics flag issues but cannot explain *why* or offer complex architectural refactoring.
+   - *Phase 8 Upgrade*: Pipeline heuristics directly into an LLM layer for deep contextual explanation and automated remediation.
+
+---
+*Architected by the PRISM Engineering Group. 2026.*

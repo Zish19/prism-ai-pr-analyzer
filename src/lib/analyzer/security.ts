@@ -1,45 +1,67 @@
-import type { Finding, AnalyzerContext } from "./types";
+import { FileDiff } from "@/data/mock-diff";
+import { AnalyzerEngine, Finding } from "./types";
 
-const SECURITY_RULES = [
+const SECURITY_PATTERNS = [
   {
-    regex: /(password|secret|api_key|token|auth)\s*=\s*['"][^'"]+['"]/i,
-    message: "Hardcoded secret detected. Use environment variables or a secrets manager.",
+    regex: /(api[_-]?key|secret|token|password)\s*[:=]/i,
+    title: "Hardcoded Secret/Password",
+    description: "Potential hardcoded credential or secret detected. Secrets should be injected via environment variables.",
     severity: "critical" as const,
   },
   {
-    regex: /eval\s*\(/i,
-    message: "Unsafe use of eval() detected. This can lead to code injection vulnerabilities.",
+    regex: /AKIA[0-9A-Z]{16}/,
+    title: "AWS Access Key",
+    description: "AWS Access Key ID detected. This is a critical security vulnerability if exposed.",
     severity: "critical" as const,
   },
   {
-    regex: /SELECT\s+.*FROM\s+.*\$\{/i,
-    message: "Potential SQL Injection detected. Use parameterized queries.",
+    regex: /eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*/,
+    title: "Hardcoded JWT Token",
+    description: "A JSON Web Token (JWT) string was detected. Tokens should not be checked into source control.",
     severity: "high" as const,
   },
   {
-    regex: /(strcpy|sprintf|gets)\s*\(/i,
-    message: "Unsafe C function detected. Use bounded alternatives like strncpy or snprintf.",
+    regex: /\b(eval|Function|exec|child_process\.exec)\s*\(/,
+    title: "Dangerous Function Call",
+    description: "Usage of dangerous runtime evaluation functions detected. This can lead to code injection attacks.",
+    severity: "high" as const,
+  },
+  {
+    // A simplistic heuristic for naive SQL concatenation
+    regex: /SELECT\s+.*FROM\s+.*\bWHERE\s+.*\s*[+=]\s*[\w.]+/,
+    title: "Potential SQL Injection",
+    description: "String concatenation detected in a SQL query. Use parameterized queries or an ORM to prevent SQL injection.",
     severity: "high" as const,
   }
 ];
 
-export function analyzeSecurity(context: AnalyzerContext): Finding[] {
-  const findings: Finding[] = [];
-  
-  context.lines.forEach((line, index) => {
-    for (const rule of SECURITY_RULES) {
-      if (rule.regex.test(line)) {
-        findings.push({
-          id: `sec-${context.file}-${index}`,
-          dimension: "security",
-          severity: rule.severity,
-          message: rule.message,
-          file: context.file,
-          line: context.startIndex + index,
-        });
+export const securityEngine: AnalyzerEngine = {
+  name: "security",
+  analyze: (files: FileDiff[]): Finding[] => {
+    const findings: Finding[] = [];
+
+    for (const file of files) {
+      for (const hunk of file.hunks) {
+        for (const line of hunk.lines) {
+          if (line.type !== "add") continue;
+
+          for (const pattern of SECURITY_PATTERNS) {
+            if (pattern.regex.test(line.content)) {
+              findings.push({
+                dimension: "security",
+                severity: pattern.severity,
+                title: pattern.title,
+                description: pattern.description,
+                file: file.path,
+                line: line.lineNew,
+                id: `sec-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+              });
+            }
+          }
+        }
       }
     }
-  });
-  
-  return findings;
-}
+
+    return findings;
+  },
+};

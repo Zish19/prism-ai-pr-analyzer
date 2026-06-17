@@ -19,7 +19,6 @@ import { CommandPalette } from "@/components/prism/layout/command-palette";
 import { MobileDrawer } from "@/components/prism/layout/mobile-drawer";
 import { BlueprintCrosshair } from "@/components/prism/blueprint-crosshair";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { analyzeDiffs } from "@/lib/analyzer/scoring";
 import type { ReviewResult } from "@/lib/analyzer/types";
 
 type AnalyzerState = "idle" | "analyzing" | "done";
@@ -67,7 +66,7 @@ export default function Dashboard() {
   }, [analyzerState, handleAnalyze]);
 
   // Called by TerminalAnalyzer when the API fetch + animation completes
-  const handleAnalysisComplete = useCallback((data: { pr: PRMetadata; diffs: FileDiff[] } | null) => {
+  const handleAnalysisComplete = useCallback((data: { pr: PRMetadata; diffs: FileDiff[]; reviewResult?: ReviewResult } | null) => {
     if (!data) {
       // Error occurred — stay in idle state
       setAnalyzerState("idle");
@@ -78,9 +77,11 @@ export default function Dashboard() {
     setPrData(data.pr);
     setDiffs(data.diffs);
     
-    // Run the deterministic rule engine on the real diff data
-    const result = analyzeDiffs(data.diffs);
-    setReviewResult(result);
+    // Use the real review result generated on the server by the engines
+    if (data.reviewResult) {
+      setReviewResult(data.reviewResult);
+    }
+    
     setAnalyzerState("done");
   }, []);
 
@@ -263,7 +264,7 @@ export default function Dashboard() {
                 <BlueprintCrosshair className="opacity-50 bottom-20" />
               </PanelResizeHandle>
               <Panel id="metrics" order={3} defaultSize={23} minSize={20} maxSize={35} className="relative z-10 bg-background">
-                <MetricsPanel review={reviewResult} />
+                <MetricsPanel review={reviewResult} repoPath={displayRepo} />
               </Panel>
             </>
           )}
@@ -276,7 +277,7 @@ export default function Dashboard() {
 
         {reviewResult && (
           <MobileDrawer open={metricsOpen && !isLargeDesktop} onOpenChange={setMetricsOpen} direction="right">
-            <MetricsPanel review={reviewResult} />
+            <MetricsPanel review={reviewResult} repoPath={displayRepo} />
           </MobileDrawer>
         )}
 

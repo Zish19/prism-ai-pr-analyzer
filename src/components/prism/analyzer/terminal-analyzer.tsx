@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Terminal, Circle, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { analyzePRAction } from "@/app/actions/analyze-pr";
 
 interface TerminalAnalyzerProps {
   prUrl: string;
-  onComplete: (data: { pr: any; diffs: any[] } | null) => void;
+  onComplete: (data: { pr: any; diffs: any[]; reviewResult?: any } | null) => void;
 }
 
 type StepStatus = "pending" | "running" | "done" | "error";
@@ -65,27 +66,23 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
       const [, owner, repo, prNumber] = urlMatch;
 
       try {
-        const res = await fetch(
-          `/api/github/pr?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}&pr=${encodeURIComponent(prNumber)}`
-        );
+        const res = await analyzePRAction(prUrl);
 
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({ error: "Unknown error" }));
+        if (!res.success) {
           updateStep(0, {
             status: "error",
-            result: `${res.status}`,
+            result: "failed",
             resultClass: "text-rose-400",
           });
-          setErrorMessage(errData.error || `GitHub API returned ${res.status}`);
+          setErrorMessage(res.error || "Failed to fetch PR data.");
           return;
         }
 
-        const data = await res.json();
         if (!isMounted) return;
 
         updateStep(0, {
           status: "done",
-          result: `${data.pr.filesChanged} files`,
+          result: `${res.metadata.changed_files} files`,
           resultClass: "text-emerald-400",
         });
 
@@ -98,10 +95,13 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
         await new Promise((r) => setTimeout(r, 400));
         if (!isMounted) return;
 
-        const diffCount = data.diffs?.length || 0;
+        const diffCount = res.files?.length || 0;
+        let diffLabel = `${diffCount} diffs`;
+        if (res.isPartial) diffLabel += " (capped)";
+
         updateStep(1, {
           status: "done",
-          result: `${diffCount} diffs`,
+          result: diffLabel,
           resultClass: "text-emerald-400",
         });
 
@@ -137,7 +137,25 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
         setIsDone(true);
         await new Promise((r) => setTimeout(r, 600));
         if (!isMounted) return;
-        onComplete(data);
+        
+        onComplete({
+          pr: {
+            id: res.metadata.id.toString(),
+            title: res.metadata.title,
+            description: res.metadata.body || "",
+            author: res.metadata.user.login,
+            authorAvatar: res.metadata.user.avatar_url,
+            createdAt: res.metadata.created_at,
+            repo: `${owner}/${repo}`,
+            number: parseInt(prNumber, 10),
+            additions: res.metadata.additions,
+            deletions: res.metadata.deletions,
+            filesChanged: res.metadata.changed_files,
+            state: res.metadata.state,
+          },
+          diffs: res.files,
+          reviewResult: res.result
+        });
       } catch (err) {
         console.error("Fetch error:", err);
         updateStep(0, {
