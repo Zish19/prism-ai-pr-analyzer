@@ -1,7 +1,21 @@
 # PRISM 
 ## Autonomous Pull Request Intelligence System
 
+<div align="center">
+  <img src="./public/demo-dashboard.png" alt="PRISM Dashboard Interface" width="100%" />
+</div>
+
 PRISM is a high-performance, automated intelligence engine designed to intercept, analyze, and score GitHub pull requests in real-time. It acts as an autonomous senior engineer, executing static analysis across four critical dimensions: Security, Performance, Architecture, and Quality. Encased in a brutalist, typography-driven interface, PRISM provides immediate, uncompromised feedback on code changes.
+
+---
+
+## The Dashboard Experience
+
+<div align="center">
+  <img src="./public/demo-sidebar.webp" alt="PRISM Sidebar Animation" width="80%" />
+</div>
+
+PRISM rejects the conventional, overly-softened corporate aesthetic. It embraces a brutalist design language defined by sharp edges, high-contrast typography, and explicit grid structures. 
 
 ---
 
