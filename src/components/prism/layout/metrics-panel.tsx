@@ -128,6 +128,11 @@ export function MetricsPanel({ review, repoPath }: MetricsPanelProps) {
                   <Badge variant={issue.severity === "critical" ? "danger" : issue.severity === "high" ? "warning" : "secondary"} size="sm" className="px-1.5 rounded-none font-mono text-[9px] uppercase tracking-wider">
                     {issue.severity}
                   </Badge>
+                  {issue.confidence && (
+                    <Badge variant="outline" size="sm" className="px-1.5 rounded-none font-mono text-[9px] uppercase tracking-wider text-muted-foreground border-border/50 opacity-70">
+                      {issue.confidence} CONF
+                    </Badge>
+                  )}
                   <span className="text-[10px] font-mono text-muted-foreground truncate pt-0.5 ml-auto">
                     {issue.file && issue.line ? `L${issue.line}` : ''}
                   </span>
@@ -138,6 +143,11 @@ export function MetricsPanel({ review, repoPath }: MetricsPanelProps) {
                 <p className="text-xs leading-relaxed font-mono text-muted-foreground">
                   {issue.description}
                 </p>
+                {issue.confidenceReason && (
+                  <p className="text-[10px] leading-relaxed font-mono text-muted-foreground/50 mt-1 italic">
+                    ↳ {issue.confidenceReason}
+                  </p>
+                )}
               </div>
             ));
           })}

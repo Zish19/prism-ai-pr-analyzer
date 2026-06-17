@@ -8,10 +8,14 @@ export interface AnalyzerEngine {
   analyze: (files: FileDiff[]) => Finding[];
 }
 
+export type Confidence = "low" | "medium" | "high";
+
 export interface Finding {
   id: string;
   dimension: Dimension;
   severity: Severity;
+  confidence: Confidence;
+  confidenceReason?: string;
   title: string;
   description: string;
   file?: string;
