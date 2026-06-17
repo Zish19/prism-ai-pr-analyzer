@@ -43,7 +43,7 @@ export function MetricCard({
       }}
       className={className}
     >
-      <div className="bg-[#0d0d12] p-4 flex flex-col justify-between min-h-[90px] border-b border-r border-transparent hover:border-border/50 hover:bg-[#12131a] transition-all relative overflow-hidden group rounded-none">
+      <div className="bg-secondary p-4 flex flex-col justify-between min-h-[90px] border-b border-r border-transparent hover:border-border/50 hover:bg-card transition-all relative overflow-hidden group rounded-none">
         <div className="flex justify-between items-start">
           <Icon
             className={cn("size-4 opacity-70", accentClasses[accentColor])}

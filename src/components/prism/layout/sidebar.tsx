@@ -14,8 +14,8 @@ interface SidebarProps {
 
 export function Sidebar({ pr, prUrl, onPrUrlChange, onAnalyze }: SidebarProps) {
   return (
-    <div className="flex h-full flex-col bg-[#0a0b0f] relative">
-      <div className="p-4 border-b border-border/50 bg-[#0d0d12]">
+    <div className="flex h-full flex-col bg-background relative">
+      <div className="p-4 border-b border-border/50 bg-secondary">
         <form 
           onSubmit={(e) => { e.preventDefault(); onAnalyze(); }}
           className="flex gap-2"
@@ -26,7 +26,7 @@ export function Sidebar({ pr, prUrl, onPrUrlChange, onAnalyze }: SidebarProps) {
               value={prUrl}
               onChange={(e) => onPrUrlChange(e.target.value)}
               placeholder="https://github.com/owner/repo/pull/123"
-              className="flex w-full px-3 py-1 shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-8 bg-[#12131a] border border-border/50 text-xs font-mono rounded-none h-8 text-foreground"
+              className="flex w-full px-3 py-1 shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 pl-8 bg-card border border-border/50 text-xs font-mono rounded-none h-8 text-foreground"
             />
           </div>
           <Button type="submit" size="sm" className="h-8 rounded-none font-mono uppercase tracking-wider text-[10px]">
@@ -66,7 +66,7 @@ export function Sidebar({ pr, prUrl, onPrUrlChange, onAnalyze }: SidebarProps) {
               <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-3">Files Changed ({pr.files?.length || pr.filesChanged})</h3>
               <ul className="space-y-px">
                 {(pr.files || []).map((file: { name: string; additions: number; deletions: number }) => (
-                  <li key={file.name} className="flex items-center justify-between text-xs p-1.5 hover:bg-[#12131a] rounded-none group cursor-pointer transition-colors border border-transparent hover:border-border/50">
+                  <li key={file.name} className="flex items-center justify-between text-xs p-1.5 hover:bg-card rounded-none group cursor-pointer transition-colors border border-transparent hover:border-border/50">
                     <div className="flex items-center gap-2 overflow-hidden">
                       <FileCode2 className="size-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
                       <span className="truncate font-mono text-muted-foreground group-hover:text-foreground">{file.name}</span>
@@ -84,7 +84,7 @@ export function Sidebar({ pr, prUrl, onPrUrlChange, onAnalyze }: SidebarProps) {
           /* Empty / Welcome state */
           <div className="flex flex-col items-center justify-center h-full text-center space-y-6 py-8">
             <div className="relative">
-              <div className="size-16 border border-border/50 flex items-center justify-center bg-[#12131a]">
+              <div className="size-16 border border-border/50 flex items-center justify-center bg-card">
                 <Activity className="size-6 text-muted-foreground/50" />
               </div>
               {/* Corner accents */}

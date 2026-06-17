@@ -53,43 +53,43 @@ export const viewport: Viewport = {
 /* -------------------------------------------------------------------
    Root Layout
    ------------------------------------------------------------------- */
+import { ThemeProvider } from "@/components/theme-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      appearance={{
-        variables: {
-          colorPrimary: '#3B82F6',
-          colorBackground: '#0a0b0f',
-          fontFamily: 'var(--font-geist-sans)',
-        },
-        elements: {
-          card: 'bg-[#12131a] border border-[#1e2028] rounded-none',
-          formButtonPrimary: 'bg-[#3B82F6] hover:bg-[#2563eb] rounded-none text-white font-mono uppercase tracking-wider',
-          formFieldInput: 'bg-[#0a0b0f] border-[#1e2028] rounded-none font-mono text-white focus:ring-[#3B82F6]',
-          footerActionLink: 'text-[#3B82F6] hover:text-[#2563eb] font-mono',
-          headerTitle: 'font-mono uppercase tracking-widest text-white',
-          headerSubtitle: 'font-mono text-muted-foreground',
-          socialButtonsBlockButton: 'border-[#1e2028] hover:bg-[#1a1b24] rounded-none text-white',
-          socialButtonsBlockButtonText: 'font-mono text-white',
-          dividerText: 'text-muted-foreground font-mono',
-          dividerLine: 'bg-[#1e2028]',
-          userButtonAvatarBox: 'rounded-none border border-[#1e2028]',
-        }
-      }}
-    >
-      <html
-        lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} dark`}
-        suppressHydrationWarning
-      >
-        <body className="min-h-dvh antialiased">
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-dvh`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ClerkProvider
+            appearance={{
+              variables: {
+                colorPrimary: '#3B82F6',
+                fontFamily: 'var(--font-geist-sans)',
+              },
+              elements: {
+                card: 'bg-card border border-border rounded-none',
+                headerTitle: 'font-mono text-foreground',
+                headerSubtitle: 'font-mono text-muted-foreground',
+                formFieldInput: 'bg-input border-border rounded-none font-mono text-foreground focus:ring-primary',
+                formFieldLabel: 'font-mono text-foreground',
+                formButtonPrimary: 'rounded-none font-mono tracking-widest uppercase hover:bg-primary/90 transition-colors',
+                footerActionLink: 'text-primary hover:text-primary/80 font-mono',
+              }
+            }}
+          >
+            {children}
+          </ClerkProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

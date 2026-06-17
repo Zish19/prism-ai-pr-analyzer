@@ -17,7 +17,7 @@ export function MobileDrawer({ open, onOpenChange, children, direction = "left" 
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" />
         <Drawer.Content 
-          className={`fixed bottom-0 top-0 z-50 flex outline-none w-[85vw] max-w-[320px] bg-[#0a0b0f] border-border ${
+          className={`fixed bottom-0 top-0 z-50 flex outline-none w-[85vw] max-w-[320px] bg-background border-border ${
             direction === "left" ? "left-0 border-r" : "right-0 border-l"
           }`}
         >

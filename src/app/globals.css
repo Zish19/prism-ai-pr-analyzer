@@ -74,36 +74,36 @@
 :root {
   --radius: 0.5rem;
 
-  --background: #ffffff;
+  --background: #fdfbf7;
   --foreground: #111118;
-  --card: #f8f8fa;
+  --card: #ffffff;
   --card-foreground: #111118;
   --popover: #ffffff;
   --popover-foreground: #111118;
   --primary: #3B82F6;
   --primary-foreground: #ffffff;
-  --secondary: #f0f0f4;
+  --secondary: #f2f0e9;
   --secondary-foreground: #111118;
-  --muted: #f0f0f4;
+  --muted: #f2f0e9;
   --muted-foreground: #6b7280;
-  --accent: #f0f0f4;
+  --accent: #f2f0e9;
   --accent-foreground: #111118;
   --destructive: #ef4444;
-  --border: #e2e2e8;
-  --input: #e2e2e8;
+  --border: #e2e0d8;
+  --input: #e2e0d8;
   --ring: #3B82F6;
   --chart-1: #3B82F6;
   --chart-2: #10b981;
   --chart-3: #f59e0b;
   --chart-4: #8b5cf6;
   --chart-5: #ef4444;
-  --sidebar: #f8f8fa;
+  --sidebar: #fdfbf7;
   --sidebar-foreground: #111118;
   --sidebar-primary: #3B82F6;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0f0f4;
+  --sidebar-accent: #f2f0e9;
   --sidebar-accent-foreground: #111118;
-  --sidebar-border: #e2e2e8;
+  --sidebar-border: #e2e0d8;
   --sidebar-ring: #3B82F6;
 
   --prism-blue: #3B82F6;

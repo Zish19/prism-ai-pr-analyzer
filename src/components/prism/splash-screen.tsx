@@ -31,7 +31,7 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
       {phase !== "exit" ? null : null}
       <motion.div
         key="splash"
-        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0a0b0f] overflow-hidden"
+        className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background overflow-hidden"
         initial={{ opacity: 1 }}
         exit={{ opacity: 0, y: -60 }}
         animate={

@@ -14,8 +14,8 @@ export function MetricsPanel({ review }: MetricsPanelProps) {
   const scores = review.scores;
 
   return (
-    <div className="flex h-full flex-col bg-[#0a0b0f] overflow-y-auto relative">
-      <div className="p-5 border-b border-border/50 bg-[#0d0d12]">
+    <div className="flex h-full flex-col bg-background overflow-y-auto relative">
+      <div className="p-5 border-b border-border/50 bg-secondary">
         <h2 className="text-[11px] font-mono tracking-[0.2em] uppercase text-muted-foreground mb-4">
           AI Review Summary
         </h2>
@@ -41,7 +41,7 @@ export function MetricsPanel({ review }: MetricsPanelProps) {
         </div>
       </div>
 
-      <div className="p-5 flex-1 bg-[#0a0b0f]">
+      <div className="p-5 flex-1 bg-background">
         <h3 className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted-foreground mb-4">
           Analysis Dimensions
         </h3>
@@ -78,8 +78,8 @@ export function MetricsPanel({ review }: MetricsPanelProps) {
         <div className="space-y-px bg-border/50 border border-border/50">
           {["security", "performance", "architecture", "quality"].flatMap((dim) => {
             const dimension = scores[dim as keyof typeof scores];
-            return dimension.issues.map((issue) => (
-              <div key={issue.id} className="bg-[#0a0b0f] p-3 hover:bg-[#12131a] transition-colors">
+            return dimension.issues.map((issue, i) => (
+              <div key={`${dim}-${issue.id}-${i}`} className="bg-background p-3 hover:bg-card transition-colors">
                 <div className="flex items-start gap-2 mb-2">
                   <Badge variant={issue.severity === "critical" ? "danger" : issue.severity === "high" ? "warning" : "secondary"} size="sm" className="px-1.5 rounded-none font-mono text-[9px] uppercase tracking-wider">
                     {issue.severity}
@@ -88,7 +88,7 @@ export function MetricsPanel({ review }: MetricsPanelProps) {
                     L{issue.line}
                   </span>
                 </div>
-                <p className="text-xs leading-relaxed font-mono text-[#e4e4e8]">
+                <p className="text-xs leading-relaxed font-mono text-foreground">
                   {issue.message}
                 </p>
               </div>
@@ -96,7 +96,7 @@ export function MetricsPanel({ review }: MetricsPanelProps) {
           })}
           
           {review.totalIssues === 0 && (
-             <div className="bg-[#0a0b0f] p-4 text-center">
+             <div className="bg-background p-4 text-center">
                <span className="text-xs font-mono text-muted-foreground">0 ISSUES DETECTED</span>
              </div>
           )}

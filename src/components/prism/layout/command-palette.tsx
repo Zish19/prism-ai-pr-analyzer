@@ -34,12 +34,12 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
           className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] outline-none"
         >
           <Command 
-            className="w-full max-w-lg bg-[#0a0b0f] border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono"
+            className="w-full max-w-lg bg-background border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono"
             label="Command Menu"
           >
             <Command.Input 
               placeholder="Type a command or search..." 
-              className="w-full bg-[#0d0d12] border-b border-border/50 px-4 py-4 text-xs outline-none placeholder:text-muted-foreground font-mono text-foreground uppercase tracking-widest"
+              className="w-full bg-card border-b border-border/50 px-4 py-4 text-xs outline-none placeholder:text-muted-foreground font-mono text-foreground uppercase tracking-widest"
               autoFocus
             />
             <Command.List className="max-h-[300px] overflow-y-auto p-2">
@@ -50,7 +50,7 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
               <Command.Group heading={<span className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground px-2 py-2 block border-b border-border/30 mb-1">Actions</span>}>
                 <Command.Item 
                   onSelect={() => { onAnalyze(); setOpen(false); }}
-                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-[#12131a] data-[selected=true]:text-emerald-500 font-mono transition-colors"
+                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-card data-[selected=true]:text-emerald-500 font-mono transition-colors"
                 >
                   <Activity className="mr-3 size-3.5" />
                   <span>Run Analysis</span>
@@ -58,7 +58,7 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
                 </Command.Item>
                 <Command.Item 
                   onSelect={() => { onToggleDiff(); setOpen(false); }}
-                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-[#12131a] data-[selected=true]:text-foreground font-mono transition-colors"
+                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-card data-[selected=true]:text-foreground font-mono transition-colors"
                 >
                   <Columns className="mr-3 size-3.5" />
                   <span>Toggle Diff Mode (Unified/Split)</span>
@@ -66,7 +66,7 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
                 </Command.Item>
                 <Command.Item 
                   onSelect={() => { onToggleSidebar(); setOpen(false); }}
-                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-[#12131a] data-[selected=true]:text-foreground font-mono transition-colors"
+                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-card data-[selected=true]:text-foreground font-mono transition-colors"
                 >
                   <LayoutPanelLeft className="mr-3 size-3.5" />
                   <span>Toggle Sidebar</span>

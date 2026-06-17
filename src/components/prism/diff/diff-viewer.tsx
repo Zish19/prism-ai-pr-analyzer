@@ -39,17 +39,17 @@ export function DiffViewer({ diff, mode }: DiffViewerProps) {
   if (isLoading) {
     return (
       <div className="mb-6 animate-pulse">
-        <div className="flex items-center h-10 px-4 bg-[#12131a] border-b border-border/50 text-sm font-mono text-muted-foreground shadow-sm">
+        <div className="flex items-center h-10 px-4 bg-card border-b border-border/50 text-sm font-mono text-muted-foreground shadow-sm">
           {diff.path}
         </div>
-        <div className="h-32 bg-[#12131a]/30 m-4 rounded-none"></div>
+        <div className="h-32 bg-card/50 m-4 rounded-none"></div>
       </div>
     );
   }
 
   return (
     <div className="mb-6 group/file">
-      <div className="sticky top-0 z-10 flex items-center h-10 px-4 bg-[#12131a] border-b border-border/50 text-sm font-mono text-muted-foreground shadow-sm transition-colors group-hover/file:bg-[#161720]">
+      <div className="sticky top-0 z-10 flex items-center h-10 px-4 bg-card border-b border-border/50 text-sm font-mono text-muted-foreground shadow-sm transition-colors group-hover/file:bg-secondary">
         {diff.path}
       </div>
       <div className="font-mono text-[13px] leading-relaxed tracking-tight py-2 select-text overflow-x-auto">
@@ -58,7 +58,7 @@ export function DiffViewer({ diff, mode }: DiffViewerProps) {
           
           return (
             <div key={hIdx}>
-              <div className="px-4 py-1 text-[#6b7280] bg-[#12131a]/50 select-none border-y border-border/20 text-xs">
+              <div className="px-4 py-1 text-muted-foreground bg-card/50 select-none border-y border-border/20 text-xs">
                 {hunk.header}
               </div>
               
@@ -105,10 +105,10 @@ function UnifiedLine({ line, tokens }: { line: DiffLine, tokens: ThemedToken[] }
         line.type === "remove" && "bg-rose-500/10 hover:bg-rose-500/[0.15]"
       )}
     >
-      <div className="w-12 shrink-0 text-right pr-3 text-[#6b7280] select-none border-r border-border/50 bg-[#12131a]/30">
+      <div className="w-12 shrink-0 text-right pr-3 text-muted-foreground select-none border-r border-border/50 bg-card/30">
         {line.lineOld || ""}
       </div>
-      <div className="w-12 shrink-0 text-right pr-3 text-[#6b7280] select-none border-r border-border/50 bg-[#12131a]/30">
+      <div className="w-12 shrink-0 text-right pr-3 text-muted-foreground select-none border-r border-border/50 bg-card/30">
         {line.lineNew || ""}
       </div>
       <div className="w-6 shrink-0 text-center select-none">
@@ -139,7 +139,7 @@ function SplitLine({ line, tokens }: { line: DiffLine, tokens: ThemedToken[] }) 
         "flex w-1/2 min-w-[400px] border-r border-border/50",
         isRemove && "bg-rose-500/10 hover:bg-rose-500/[0.15]"
       )}>
-        <div className="w-12 shrink-0 text-right pr-3 text-[#6b7280] select-none border-r border-border/50 bg-[#12131a]/30">
+        <div className="w-12 shrink-0 text-right pr-3 text-muted-foreground select-none border-r border-border/50 bg-card/30">
           {(isContext || isRemove) ? line.lineOld : ""}
         </div>
         <div className="w-6 shrink-0 text-center select-none">
@@ -155,7 +155,7 @@ function SplitLine({ line, tokens }: { line: DiffLine, tokens: ThemedToken[] }) 
         "flex w-1/2 min-w-[400px]",
         isAdd && "bg-emerald-500/10 hover:bg-emerald-500/[0.15]"
       )}>
-        <div className="w-12 shrink-0 text-right pr-3 text-[#6b7280] select-none border-r border-border/50 bg-[#12131a]/30">
+        <div className="w-12 shrink-0 text-right pr-3 text-muted-foreground select-none border-r border-border/50 bg-card/30">
           {(isContext || isAdd) ? line.lineNew : ""}
         </div>
         <div className="w-6 shrink-0 text-center select-none">

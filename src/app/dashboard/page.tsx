@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserButton } from "@clerk/nextjs";
 import type { PRMetadata } from "@/data/mock-review";
 import type { FileDiff } from "@/data/mock-diff";
+import { ThemeToggle } from "@/components/prism/theme-toggle";
 
 import { Sidebar } from "@/components/prism/layout/sidebar";
 import { MetricsPanel } from "@/components/prism/layout/metrics-panel";
@@ -94,10 +95,10 @@ export default function Dashboard() {
   const displayNumber = displayPr?.number || 0;
 
   return (
-    <div className="flex h-dvh flex-col bg-[#0a0b0f] text-foreground overflow-hidden font-sans selection:bg-primary/30">
+    <div className="flex h-dvh flex-col bg-background text-foreground overflow-hidden font-sans selection:bg-primary/30">
       
       {/* Top Navigation - Brutalist / mod.construction style */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border/50 px-4 z-10 bg-[#0a0b0f] relative rounded-none">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border/50 px-4 z-10 bg-background relative rounded-none">
         <BlueprintCrosshair className="-bottom-1.5 left-[20vw] opacity-50" />
         <BlueprintCrosshair className="-bottom-1.5 right-[20vw] opacity-50" />
         
@@ -122,7 +123,7 @@ export default function Dashboard() {
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex text-[10px] font-mono uppercase tracking-widest text-muted-foreground bg-[#12131a] px-2 py-1 border border-border/50 rounded-none">
+          <div className="hidden sm:flex text-[10px] font-mono uppercase tracking-widest text-muted-foreground bg-card px-2 py-1 border border-border/50 rounded-none">
             CMD <kbd className="font-mono mx-1 font-bold text-foreground">CTRL+K</kbd>
           </div>
           <Button 
@@ -130,8 +131,8 @@ export default function Dashboard() {
             size="sm" 
             className={`h-8 hidden md:flex rounded-none border-border/50 text-xs font-mono uppercase tracking-wider transition-colors ${
               sidebarOpen 
-                ? "bg-white text-black hover:bg-white/90" 
-                : "bg-[#12131a] text-muted-foreground hover:text-foreground"
+                ? "bg-foreground text-background hover:bg-foreground/90" 
+                : "bg-card text-muted-foreground hover:text-foreground"
             }`} 
             onClick={() => setSidebarOpen(!sidebarOpen)} 
             title="Toggle Sidebar (Ctrl+B)"
@@ -142,18 +143,19 @@ export default function Dashboard() {
           
           {/* Mobile Drawer Toggles */}
           {!isDesktop && (
-            <Button variant="outline" size="sm" className="h-8 rounded-none border-border/50 bg-[#12131a]" onClick={() => setSidebarOpen(true)}>
+            <Button variant="outline" size="sm" className="h-8 rounded-none border-border/50 bg-card" onClick={() => setSidebarOpen(true)}>
               <Menu className="size-4" />
             </Button>
           )}
           {!isLargeDesktop && analyzerState === "done" && (
-            <Button variant="outline" size="sm" className="h-8 rounded-none border-border/50 bg-[#12131a] text-emerald-500" onClick={() => setMetricsOpen(true)}>
+            <Button variant="outline" size="sm" className="h-8 rounded-none border-border/50 bg-card text-emerald-500" onClick={() => setMetricsOpen(true)}>
               <Activity className="size-4" />
             </Button>
           )}
 
           <div className="h-6 w-px bg-border/50 hidden sm:block" />
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <UserButton />
           </div>
         </div>
@@ -164,9 +166,9 @@ export default function Dashboard() {
         
         {/* Terminal Overlay */}
         {analyzerState === "analyzing" && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center bg-[#0a0b0f]/90 backdrop-blur-md p-4">
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-md p-4">
             {/* Grid overlay for technical feel */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(120,120,120,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(120,120,120,0.05)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
             <TerminalAnalyzer prUrl={prUrl} onComplete={handleAnalysisComplete} />
           </div>
         )}
@@ -176,7 +178,7 @@ export default function Dashboard() {
           {/* Left Sidebar (Desktop) */}
           {isDesktop && sidebarOpen && (
             <>
-              <Panel id="sidebar" order={1} defaultSize={22} minSize={15} maxSize={40} className="relative bg-[#0a0b0f]">
+              <Panel id="sidebar" order={1} defaultSize={22} minSize={15} maxSize={40} className="relative bg-background">
                 <Sidebar pr={displayPr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} />
               </Panel>
               <PanelResizeHandle className="w-[1px] bg-border hover:bg-primary/50 transition-colors cursor-col-resize relative flex flex-col justify-center items-center">
@@ -188,28 +190,28 @@ export default function Dashboard() {
 
           {/* Center Diff Viewer */}
           <Panel id="diff-viewer" order={2} defaultSize={centerSize} minSize={30} className="relative z-0">
-            <div className="flex-1 flex flex-col h-full bg-[#0a0b0f] min-w-0">
-              <div className="flex items-center h-10 border-b border-border/50 px-4 shrink-0 bg-[#0d0d12] justify-between">
+            <div className="flex-1 flex flex-col h-full bg-background min-w-0">
+              <div className="flex items-center h-10 border-b border-border/50 px-4 shrink-0 bg-secondary justify-between">
                 <div className="flex items-center gap-3">
                   <h2 className="text-[10px] font-mono tracking-widest uppercase text-foreground">Diff Preview</h2>
                   {diffs.length > 0 && (
-                    <Badge variant="outline" className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground border-border/50 rounded-none hidden sm:inline-flex bg-[#12131a]">
+                    <Badge variant="outline" className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground border-border/50 rounded-none hidden sm:inline-flex bg-card">
                       Viewing {diffs.length} file{diffs.length !== 1 ? "s" : ""}
                     </Badge>
                   )}
                 </div>
                 
-                <div className="flex items-center gap-1 bg-[#12131a] rounded-none p-0.5 border border-border/50">
+                <div className="flex items-center gap-1 bg-card rounded-none p-0.5 border border-border/50">
                   <button 
                     onClick={() => setDiffMode("unified")}
-                    className={`p-1 flex items-center justify-center transition-colors ${diffMode === "unified" ? "bg-white text-black" : "text-muted-foreground hover:text-foreground"}`}
+                    className={`p-1 flex items-center justify-center transition-colors ${diffMode === "unified" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
                     title="Unified View (Ctrl+D)"
                   >
                     <Rows className="size-3.5" />
                   </button>
                   <button 
                     onClick={() => setDiffMode("split")}
-                    className={`p-1 flex items-center justify-center transition-colors ${diffMode === "split" ? "bg-white text-black" : "text-muted-foreground hover:text-foreground"}`}
+                    className={`p-1 flex items-center justify-center transition-colors ${diffMode === "split" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
                     title="Split View (Ctrl+D)"
                   >
                     <Columns className="size-3.5" />
@@ -217,7 +219,7 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              <div className="flex-1 overflow-y-auto bg-[#0a0b0f]">
+              <div className="flex-1 overflow-y-auto bg-background">
                 {diffs.length > 0 ? (
                   diffs.map((diff, idx) => (
                     <DiffViewer key={`${diff.path}-${idx}`} diff={diff} mode={diffMode} />
@@ -226,10 +228,10 @@ export default function Dashboard() {
                   /* Empty state — no diff loaded */
                   <div className="flex flex-col items-center justify-center h-full text-center space-y-6 px-8">
                     <div className="relative">
-                      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+                      <div className="absolute inset-0 bg-[linear-gradient(rgba(120,120,120,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(120,120,120,0.05)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
                       
                       {/* Center icon */}
-                      <div className="size-20 border border-border/30 flex items-center justify-center bg-[#12131a] relative">
+                      <div className="size-20 border border-border/30 flex items-center justify-center bg-card relative">
                         <GitPullRequest className="size-8 text-muted-foreground/20" />
                         <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-primary/30" />
                         <div className="absolute -top-1 -right-1 w-2 h-2 border-t border-r border-primary/30" />
@@ -260,7 +262,7 @@ export default function Dashboard() {
                 <BlueprintCrosshair className="opacity-50 top-20" />
                 <BlueprintCrosshair className="opacity-50 bottom-20" />
               </PanelResizeHandle>
-              <Panel id="metrics" order={3} defaultSize={23} minSize={20} maxSize={35} className="relative z-10 bg-[#0a0b0f]">
+              <Panel id="metrics" order={3} defaultSize={23} minSize={20} maxSize={35} className="relative z-10 bg-background">
                 <MetricsPanel review={reviewResult} />
               </Panel>
             </>

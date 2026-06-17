@@ -160,10 +160,10 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
   const prId = prUrl.match(/\/pull\/(\d+)/)?.[1] || "???";
 
   return (
-    <div className="w-full max-w-lg bg-[#0a0b0f] border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono flex flex-col relative">
+    <div className="w-full max-w-lg bg-background border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono flex flex-col relative">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
       {/* Header */}
-      <div className="flex items-center px-4 py-2 bg-[#0d0d12] border-b border-border/50 relative z-10">
+      <div className="flex items-center px-4 py-2 bg-secondary border-b border-border/50 relative z-10">
         <div className="flex gap-1.5">
           <div className="size-2 rounded-none bg-border/50" />
           <div className="size-2 rounded-none bg-border/50" />

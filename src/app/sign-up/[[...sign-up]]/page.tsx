@@ -3,7 +3,7 @@ import { BlueprintCrosshair } from "@/components/prism/blueprint-crosshair";
 
 export default function SignUpPage() {
   return (
-    <div className="min-h-dvh flex items-center justify-center bg-[#0a0b0f] relative overflow-hidden">
+    <div className="min-h-dvh flex items-center justify-center bg-background relative overflow-hidden">
       {/* Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
       
