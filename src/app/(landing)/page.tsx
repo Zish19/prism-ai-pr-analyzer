@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/prism/theme-toggle";
 import { BRAND } from "@/constants/brand";
 import { Button } from "@/components/ui/button";
 import { BlueprintCrosshair } from "@/components/prism/blueprint-crosshair";
+import { InteractiveToy } from "@/components/prism/interactive-toy";
 
 export default function LandingPage() {
   const { scrollYProgress } = useScroll();
@@ -158,7 +159,7 @@ export default function LandingPage() {
                 className="relative bg-card border border-border p-8 rounded-none group hover:border-primary/50 transition-colors"
               >
                 {/* Step Number */}
-                <div className="absolute -top-4 -left-4 text-6xl font-mono font-bold text-foreground/[0.03] group-hover:text-primary/10 transition-colors pointer-events-none">
+                <div className="absolute -top-4 -left-4 text-6xl font-mono font-bold dark:text-foreground/[0.03] text-foreground/[0.08] group-hover:text-primary/15 transition-colors pointer-events-none">
                   {item.step}
                 </div>
                 
@@ -243,6 +244,9 @@ export default function LandingPage() {
           </Show>
         </div>
       </section>
+
+      {/* Interactive Playground */}
+      <InteractiveToy />
 
       {/* Footer */}
       <footer className="py-8 px-6 bg-background border-t border-border flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-muted-foreground">
