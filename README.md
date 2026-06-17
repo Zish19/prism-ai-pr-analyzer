@@ -121,19 +121,4 @@ The interface is built to communicate raw data efficiently, honoring the precisi
 
 ---
 
-## Phase 8 / Future Roadmap
-
-The current iteration of PRISM relies on fast heuristic processing. Future upgrades will address known architectural constraints:
-
-1. **AST & Tree-Sitter Integration**
-   - *Current Limitation*: Regex heuristics lack deep syntax understanding.
-   - *Phase 8 Upgrade*: Implementing AST parsing to unlock true architectural analysis.
-2. **Context-Aware Repository Scanning**
-   - *Current Limitation*: Diff-only analysis lacks unchanged context, risking false positives.
-   - *Phase 8 Upgrade*: Expanding analysis scopes beyond the patch to evaluate full module impact.
-3. **LLM Reasoning Layer**
-   - *Current Limitation*: Heuristics flag issues but cannot explain *why* or offer complex architectural refactoring.
-   - *Phase 8 Upgrade*: Pipeline heuristics directly into an LLM layer for deep contextual explanation and automated remediation.
-
----
 *Architected by the PRISM Engineering Group. 2026.*
