@@ -69,6 +69,11 @@ export default function AppHome() {
     setAnalyzerState("done");
   };
 
+  const showMetrics = isLargeDesktop && analyzerState === "done" && reviewResult !== null;
+  const centerSize = sidebarOpen 
+    ? (showMetrics ? 55 : 78) 
+    : (showMetrics ? 77 : 100);
+
   return (
     <div className="flex h-dvh flex-col bg-[#0a0b0f] text-foreground overflow-hidden font-sans selection:bg-primary/30">
       
@@ -97,7 +102,17 @@ export default function AppHome() {
           <div className="hidden sm:flex text-[10px] font-mono uppercase tracking-widest text-muted-foreground bg-[#12131a] px-2 py-1 border border-border/50 rounded-none">
             CMD <kbd className="font-mono mx-1 font-bold text-foreground">CTRL+K</kbd>
           </div>
-          <Button variant="outline" size="sm" className="h-8 hidden md:flex rounded-none border-border/50 bg-[#12131a] text-xs font-mono uppercase tracking-wider hover:bg-white hover:text-black transition-colors" onClick={() => setSidebarOpen(!sidebarOpen)} title="Toggle Sidebar (Ctrl+B)">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={`h-8 hidden md:flex rounded-none border-border/50 text-xs font-mono uppercase tracking-wider transition-colors ${
+              sidebarOpen 
+                ? "bg-white text-black hover:bg-white/90" 
+                : "bg-[#12131a] text-muted-foreground hover:text-foreground"
+            }`} 
+            onClick={() => setSidebarOpen(!sidebarOpen)} 
+            title="Toggle Sidebar (Ctrl+B)"
+          >
             <LayoutPanelLeft className="size-3.5 mr-2" />
             Sidebar
           </Button>
@@ -141,7 +156,7 @@ export default function AppHome() {
           {/* Left Sidebar (Desktop) */}
           {isDesktop && sidebarOpen && (
             <>
-              <Panel defaultSize={22} minSize={15} maxSize={40} className="relative bg-[#0a0b0f]">
+              <Panel id="sidebar" order={1} defaultSize={22} minSize={15} maxSize={40} className="relative bg-[#0a0b0f]">
                 <Sidebar pr={pr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} />
               </Panel>
               <PanelResizeHandle className="w-[1px] bg-border hover:bg-primary/50 transition-colors cursor-col-resize relative flex flex-col justify-center items-center">
@@ -152,7 +167,7 @@ export default function AppHome() {
           )}
 
           {/* Center Diff Viewer */}
-          <Panel defaultSize={sidebarOpen ? 55 : 77} minSize={30} className="relative z-0">
+          <Panel id="diff-viewer" order={2} defaultSize={centerSize} minSize={30} className="relative z-0">
             <div className="flex-1 flex flex-col h-full bg-[#0a0b0f] min-w-0">
               <div className="flex items-center h-10 border-b border-border/50 px-4 shrink-0 bg-[#0d0d12] justify-between">
                 <div className="flex items-center gap-3">
@@ -188,13 +203,13 @@ export default function AppHome() {
           </Panel>
 
           {/* Right Metrics Panel (Desktop) */}
-          {isLargeDesktop && analyzerState === "done" && reviewResult && (
+          {showMetrics && (
             <>
               <PanelResizeHandle className="w-[1px] bg-border hover:bg-primary/50 transition-colors cursor-col-resize relative flex flex-col justify-center items-center">
                 <BlueprintCrosshair className="opacity-50 top-20" />
                 <BlueprintCrosshair className="opacity-50 bottom-20" />
               </PanelResizeHandle>
-              <Panel defaultSize={23} minSize={20} maxSize={35} className="relative z-10 bg-[#0a0b0f]">
+              <Panel id="metrics" order={3} defaultSize={23} minSize={20} maxSize={35} className="relative z-10 bg-[#0a0b0f]">
                 <MetricsPanel review={reviewResult} />
               </Panel>
             </>
