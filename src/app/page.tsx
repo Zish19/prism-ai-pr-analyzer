@@ -7,8 +7,9 @@ import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { BRAND } from "@/constants/brand";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MOCK_REVIEW } from "@/data/mock-review";
+import type { PRMetadata } from "@/data/mock-review";
 import { MOCK_DIFF, MOCK_HEADER_DIFF } from "@/data/mock-diff";
+import type { FileDiff } from "@/data/mock-diff";
 
 import { Sidebar } from "@/components/prism/layout/sidebar";
 import { MetricsPanel } from "@/components/prism/layout/metrics-panel";
@@ -17,15 +18,41 @@ import { TerminalAnalyzer } from "@/components/prism/analyzer/terminal-analyzer"
 import { CommandPalette } from "@/components/prism/layout/command-palette";
 import { MobileDrawer } from "@/components/prism/layout/mobile-drawer";
 import { BlueprintCrosshair } from "@/components/prism/blueprint-crosshair";
+import { SplashScreen } from "@/components/prism/splash-screen";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { analyzeDiffs } from "@/lib/analyzer/scoring";
 import type { ReviewResult } from "@/lib/analyzer/types";
 
+// Demo PR metadata for the "Try Demo" button
+const DEMO_PR: PRMetadata = {
+  number: 31336,
+  title: "Add utility APIs for HPKE suite introspection",
+  repo: "openssl/openssl",
+  author: "Zish19",
+  authorAvatar: "https://avatars.githubusercontent.com/u/1?v=4",
+  baseBranch: "master",
+  headBranch: "hpke-suite-utils",
+  status: "open",
+  filesChanged: 5,
+  additions: 287,
+  deletions: 12,
+  commits: 3,
+  createdAt: "2025-06-14",
+  files: [
+    { name: "crypto/hpke/hpke_util.c", additions: 184, deletions: 0 },
+    { name: "include/openssl/hpke.h", additions: 28, deletions: 4 },
+  ],
+};
+
 type AnalyzerState = "idle" | "analyzing" | "done";
 
 export default function AppHome() {
-  const pr = MOCK_REVIEW.pr;
-  const [prUrl, setPrUrl] = useState(`https://github.com/${pr.repo}/pull/${pr.number}`);
+  const [showSplash, setShowSplash] = useState(true);
+
+  // PR data state — starts null (no PR loaded)
+  const [prData, setPrData] = useState<PRMetadata | null>(null);
+  const [diffs, setDiffs] = useState<FileDiff[]>([]);
+  const [prUrl, setPrUrl] = useState("");
   const [analyzerState, setAnalyzerState] = useState<AnalyzerState>("idle");
   const [diffMode, setDiffMode] = useState<"unified" | "split">("unified");
   
@@ -39,8 +66,21 @@ export default function AppHome() {
 
   const handleAnalyze = useCallback(() => {
     if (analyzerState === "analyzing") return;
+    if (!prUrl.trim()) return;
     setAnalyzerState("analyzing");
-  }, [analyzerState]);
+  }, [analyzerState, prUrl]);
+
+  // Demo mode: load hardcoded mock data
+  const handleTryDemo = useCallback(() => {
+    setPrUrl("https://github.com/openssl/openssl/pull/31336");
+    setPrData(DEMO_PR);
+    setDiffs([MOCK_DIFF, MOCK_HEADER_DIFF]);
+    
+    // Run the analyzer on demo data
+    const result = analyzeDiffs([MOCK_DIFF, MOCK_HEADER_DIFF]);
+    setReviewResult(result);
+    setAnalyzerState("done");
+  }, []);
 
   // Global Keyboard Shortcuts
   useEffect(() => {
@@ -62,17 +102,39 @@ export default function AppHome() {
     return () => document.removeEventListener("keydown", down);
   }, [analyzerState, handleAnalyze]);
 
-  const handleAnalysisComplete = () => {
-    // Run the actual deterministic rule engine on the diff data
-    const result = analyzeDiffs([MOCK_DIFF, MOCK_HEADER_DIFF]);
+  // Called by TerminalAnalyzer when the API fetch + animation completes
+  const handleAnalysisComplete = useCallback((data: { pr: PRMetadata; diffs: FileDiff[] } | null) => {
+    if (!data) {
+      // Error occurred — stay in idle state
+      setAnalyzerState("idle");
+      return;
+    }
+    
+    // Store the fetched PR metadata and diffs
+    setPrData(data.pr);
+    setDiffs(data.diffs);
+    
+    // Run the deterministic rule engine on the real diff data
+    const result = analyzeDiffs(data.diffs);
     setReviewResult(result);
     setAnalyzerState("done");
-  };
+  }, []);
 
   const showMetrics = isLargeDesktop && analyzerState === "done" && reviewResult !== null;
   const centerSize = sidebarOpen 
     ? (showMetrics ? 55 : 78) 
     : (showMetrics ? 77 : 100);
+
+  // Display data
+  const displayPr = prData;
+  const displayAuthor = displayPr?.author || "User";
+  const displayAvatar = displayPr?.authorAvatar || "https://avatars.githubusercontent.com/u/1?v=4";
+  const displayRepo = displayPr?.repo || "—";
+  const displayNumber = displayPr?.number || 0;
+
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
   return (
     <div className="flex h-dvh flex-col bg-[#0a0b0f] text-foreground overflow-hidden font-sans selection:bg-primary/30">
@@ -92,9 +154,13 @@ export default function AppHome() {
           <div className="h-4 w-px bg-border/50 hidden sm:block" />
           <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground uppercase tracking-wider">
             <GitPullRequest className="size-3.5" />
-            <span className="hidden sm:inline-block">{pr.repo}</span>
-            <span className="text-border hidden sm:inline-block">/</span>
-            <span className="text-foreground font-medium">#{pr.number}</span>
+            <span className="hidden sm:inline-block">{displayRepo}</span>
+            {displayNumber > 0 && (
+              <>
+                <span className="text-border hidden sm:inline-block">/</span>
+                <span className="text-foreground font-medium">#{displayNumber}</span>
+              </>
+            )}
           </div>
         </div>
         
@@ -132,9 +198,9 @@ export default function AppHome() {
           <div className="h-6 w-px bg-border/50 hidden sm:block" />
           <div className="flex items-center gap-2 text-xs font-mono">
             <div className="relative size-6 overflow-hidden bg-secondary rounded-none border border-border/50 grayscale hover:grayscale-0 transition-all">
-              <Image src={pr.authorAvatar} alt={pr.author} fill className="object-cover" />
+              <Image src={displayAvatar} alt={displayAuthor} fill className="object-cover" />
             </div>
-            <span className="text-muted-foreground hidden sm:inline-block uppercase tracking-wider">{pr.author}</span>
+            <span className="text-muted-foreground hidden sm:inline-block uppercase tracking-wider">{displayAuthor}</span>
           </div>
         </div>
       </header>
@@ -157,7 +223,7 @@ export default function AppHome() {
           {isDesktop && sidebarOpen && (
             <>
               <Panel id="sidebar" order={1} defaultSize={22} minSize={15} maxSize={40} className="relative bg-[#0a0b0f]">
-                <Sidebar pr={pr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} />
+                <Sidebar pr={displayPr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} onTryDemo={handleTryDemo} />
               </Panel>
               <PanelResizeHandle className="w-[1px] bg-border hover:bg-primary/50 transition-colors cursor-col-resize relative flex flex-col justify-center items-center">
                 <BlueprintCrosshair className="opacity-50 top-10" />
@@ -172,9 +238,11 @@ export default function AppHome() {
               <div className="flex items-center h-10 border-b border-border/50 px-4 shrink-0 bg-[#0d0d12] justify-between">
                 <div className="flex items-center gap-3">
                   <h2 className="text-[10px] font-mono tracking-widest uppercase text-foreground">Diff Preview</h2>
-                  <Badge variant="outline" className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground border-border/50 rounded-none hidden sm:inline-flex bg-[#12131a]">
-                    Viewing 2 files
-                  </Badge>
+                  {diffs.length > 0 && (
+                    <Badge variant="outline" className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground border-border/50 rounded-none hidden sm:inline-flex bg-[#12131a]">
+                      Viewing {diffs.length} file{diffs.length !== 1 ? "s" : ""}
+                    </Badge>
+                  )}
                 </div>
                 
                 <div className="flex items-center gap-1 bg-[#12131a] rounded-none p-0.5 border border-border/50">
@@ -196,14 +264,58 @@ export default function AppHome() {
               </div>
               
               <div className="flex-1 overflow-y-auto bg-[#0a0b0f]">
-                <DiffViewer diff={MOCK_DIFF} mode={diffMode} />
-                <DiffViewer diff={MOCK_HEADER_DIFF} mode={diffMode} />
+                {diffs.length > 0 ? (
+                  diffs.map((diff, idx) => (
+                    <DiffViewer key={`${diff.path}-${idx}`} diff={diff} mode={diffMode} />
+                  ))
+                ) : (
+                  /* Empty state — no diff loaded */
+                  <div className="flex flex-col items-center justify-center h-full text-center space-y-6 px-8">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+                      
+                      {/* Center icon */}
+                      <div className="size-20 border border-border/30 flex items-center justify-center bg-[#12131a] relative">
+                        <GitPullRequest className="size-8 text-muted-foreground/20" />
+                        <div className="absolute -top-1 -left-1 w-2 h-2 border-t border-l border-primary/30" />
+                        <div className="absolute -top-1 -right-1 w-2 h-2 border-t border-r border-primary/30" />
+                        <div className="absolute -bottom-1 -left-1 w-2 h-2 border-b border-l border-primary/30" />
+                        <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b border-r border-primary/30" />
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h3 className="text-[11px] font-mono uppercase tracking-[0.2em] text-muted-foreground">
+                        Ready to Analyze
+                      </h3>
+                      <p className="text-[10px] font-mono text-muted-foreground/50 max-w-[320px] leading-relaxed mx-auto">
+                        Paste any public GitHub pull request URL in the sidebar
+                        and press <kbd className="text-foreground font-bold">Ctrl+Enter</kbd> to begin analysis.
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 pt-4">
+                      <div className="h-px w-12 bg-border/20" />
+                      <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/30">or</span>
+                      <div className="h-px w-12 bg-border/20" />
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="rounded-none font-mono uppercase tracking-wider text-[10px] border-border/50 bg-[#12131a] hover:bg-primary hover:text-primary-foreground transition-colors h-9 px-6"
+                      onClick={handleTryDemo}
+                    >
+                      Load Demo PR
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </Panel>
 
           {/* Right Metrics Panel (Desktop) */}
-          {showMetrics && (
+          {showMetrics && reviewResult && (
             <>
               <PanelResizeHandle className="w-[1px] bg-border hover:bg-primary/50 transition-colors cursor-col-resize relative flex flex-col justify-center items-center">
                 <BlueprintCrosshair className="opacity-50 top-20" />
@@ -218,7 +330,7 @@ export default function AppHome() {
 
         {/* Mobile Drawers */}
         <MobileDrawer open={sidebarOpen && !isDesktop} onOpenChange={setSidebarOpen} direction="left">
-          <Sidebar pr={pr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} />
+          <Sidebar pr={displayPr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} onTryDemo={handleTryDemo} />
         </MobileDrawer>
 
         {reviewResult && (

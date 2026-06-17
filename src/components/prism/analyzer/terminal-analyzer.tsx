@@ -1,73 +1,163 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Terminal, Circle, Loader2, CheckCircle2 } from "lucide-react";
+import { Terminal, Circle, Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 interface TerminalAnalyzerProps {
   prUrl: string;
-  onComplete: () => void;
+  onComplete: (data: { pr: any; diffs: any[] } | null) => void;
+}
+
+type StepStatus = "pending" | "running" | "done" | "error";
+
+interface Step {
+  id: number;
+  label: string;
+  status: StepStatus;
+  result: string;
+  resultClass: string;
 }
 
 export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [steps, setSteps] = useState([
-    { id: 1, label: "Fetching Metadata", status: "pending", result: "", resultClass: "" },
-    { id: 2, label: "Security Analysis", status: "pending", result: "", resultClass: "" },
-    { id: 3, label: "Performance Profile", status: "pending", result: "", resultClass: "" },
-    { id: 4, label: "Scoring Engine", status: "pending", result: "", resultClass: "" }
+  const [steps, setSteps] = useState<Step[]>([
+    { id: 1, label: "Fetching PR Data", status: "pending", result: "", resultClass: "" },
+    { id: 2, label: "Parsing Diff", status: "pending", result: "", resultClass: "" },
+    { id: 3, label: "Running Analysis", status: "pending", result: "", resultClass: "" },
+    { id: 4, label: "Scoring Engine", status: "pending", result: "", resultClass: "" },
   ]);
   const [isDone, setIsDone] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    
-    const runSequence = async () => {
-      // Small initial delay
-      await new Promise(r => setTimeout(r, 400));
-      if (!isMounted) return;
-      
-      // Step 0: Fetching metadata
-      setCurrentStep(0);
-      setSteps(s => s.map((step, i) => i === 0 ? { ...step, status: "running" } : step));
-      await new Promise(r => setTimeout(r, 300));
-      if (!isMounted) return;
-      setSteps(s => s.map((step, i) => i === 0 ? { ...step, status: "done", result: "done" } : step));
-      
-      // Step 1: Security
-      setCurrentStep(1);
-      setSteps(s => s.map((step, i) => i === 1 ? { ...step, status: "running" } : step));
-      await new Promise(r => setTimeout(r, 600));
-      if (!isMounted) return;
-      setSteps(s => s.map((step, i) => i === 1 ? { ...step, status: "done", result: "2 issues", resultClass: "text-amber-400" } : step));
-      
-      // Step 2: Performance
-      setCurrentStep(2);
-      setSteps(s => s.map((step, i) => i === 2 ? { ...step, status: "running" } : step));
-      await new Promise(r => setTimeout(r, 400));
-      if (!isMounted) return;
-      setSteps(s => s.map((step, i) => i === 2 ? { ...step, status: "done", result: "optimized", resultClass: "text-emerald-400" } : step));
-      
-      // Step 3: Score
-      setCurrentStep(3);
-      setSteps(s => s.map((step, i) => i === 3 ? { ...step, status: "running" } : step));
-      await new Promise(r => setTimeout(r, 500));
-      if (!isMounted) return;
-      setSteps(s => s.map((step, i) => i === 3 ? { ...step, status: "done", result: "84%", resultClass: "text-primary" } : step));
-      
-      // Complete
-      setIsDone(true);
-      await new Promise(r => setTimeout(r, 600));
-      if (!isMounted) return;
-      onComplete();
-    };
-    
-    runSequence();
-    
-    return () => { isMounted = false; };
-  }, [onComplete]);
 
-  // Extract PR id for command
-  const prId = prUrl.match(/\/pull\/(\d+)/)?.[1] || "31336";
+    const updateStep = (index: number, updates: Partial<Step>) => {
+      if (!isMounted) return;
+      setSteps((s) =>
+        s.map((step, i) => (i === index ? { ...step, ...updates } : step))
+      );
+    };
+
+    const runSequence = async () => {
+      await new Promise((r) => setTimeout(r, 400));
+      if (!isMounted) return;
+
+      // Step 0: Fetch PR data from our API route
+      setCurrentStep(0);
+      updateStep(0, { status: "running" });
+
+      // Parse the URL to get owner/repo/pr
+      const urlMatch = prUrl.match(
+        /(?:https?:\/\/)?github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/
+      );
+
+      if (!urlMatch) {
+        updateStep(0, {
+          status: "error",
+          result: "invalid url",
+          resultClass: "text-rose-400",
+        });
+        setErrorMessage("Invalid GitHub PR URL. Expected format: https://github.com/owner/repo/pull/123");
+        return;
+      }
+
+      const [, owner, repo, prNumber] = urlMatch;
+
+      try {
+        const res = await fetch(
+          `/api/github/pr?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}&pr=${encodeURIComponent(prNumber)}`
+        );
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({ error: "Unknown error" }));
+          updateStep(0, {
+            status: "error",
+            result: `${res.status}`,
+            resultClass: "text-rose-400",
+          });
+          setErrorMessage(errData.error || `GitHub API returned ${res.status}`);
+          return;
+        }
+
+        const data = await res.json();
+        if (!isMounted) return;
+
+        updateStep(0, {
+          status: "done",
+          result: `${data.pr.filesChanged} files`,
+          resultClass: "text-emerald-400",
+        });
+
+        // Step 1: Parse diff
+        await new Promise((r) => setTimeout(r, 300));
+        if (!isMounted) return;
+        setCurrentStep(1);
+        updateStep(1, { status: "running" });
+
+        await new Promise((r) => setTimeout(r, 400));
+        if (!isMounted) return;
+
+        const diffCount = data.diffs?.length || 0;
+        updateStep(1, {
+          status: "done",
+          result: `${diffCount} diffs`,
+          resultClass: "text-emerald-400",
+        });
+
+        // Step 2: Running analysis
+        await new Promise((r) => setTimeout(r, 300));
+        if (!isMounted) return;
+        setCurrentStep(2);
+        updateStep(2, { status: "running" });
+
+        await new Promise((r) => setTimeout(r, 600));
+        if (!isMounted) return;
+        updateStep(2, {
+          status: "done",
+          result: "complete",
+          resultClass: "text-emerald-400",
+        });
+
+        // Step 3: Scoring
+        await new Promise((r) => setTimeout(r, 300));
+        if (!isMounted) return;
+        setCurrentStep(3);
+        updateStep(3, { status: "running" });
+
+        await new Promise((r) => setTimeout(r, 500));
+        if (!isMounted) return;
+        updateStep(3, {
+          status: "done",
+          result: "ready",
+          resultClass: "text-primary",
+        });
+
+        // Complete
+        setIsDone(true);
+        await new Promise((r) => setTimeout(r, 600));
+        if (!isMounted) return;
+        onComplete(data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        updateStep(0, {
+          status: "error",
+          result: "network error",
+          resultClass: "text-rose-400",
+        });
+        setErrorMessage("Network error. Please check your connection and try again.");
+      }
+    };
+
+    runSequence();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [prUrl, onComplete]);
+
+  // Extract PR id for command display
+  const prId = prUrl.match(/\/pull\/(\d+)/)?.[1] || "???";
 
   return (
     <div className="w-full max-w-lg bg-[#0a0b0f] border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono flex flex-col relative">
@@ -89,7 +179,7 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
       <div className="p-5 text-xs text-[#a1a1aa] min-h-[260px] relative z-10">
         <div className="flex items-center gap-2 mb-4 text-emerald-500">
           <span className="font-bold">▶</span>
-          <span className="uppercase tracking-widest text-[10px]">Initializing AI agents for {prId}...</span>
+          <span className="uppercase tracking-widest text-[10px]">Initializing AI agents for PR #{prId}...</span>
         </div>
 
         <div className="space-y-4 ml-2 border-l border-border/30 pl-4">
@@ -100,6 +190,7 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
                   {step.status === "pending" && <Circle className="size-3 text-muted-foreground/30" />}
                   {step.status === "running" && <Loader2 className="size-3 text-primary animate-spin" />}
                   {step.status === "done" && <CheckCircle2 className="size-3 text-emerald-500" />}
+                  {step.status === "error" && <XCircle className="size-3 text-rose-500" />}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
@@ -123,7 +214,22 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
           ))}
         </div>
 
-        {isDone && (
+        {errorMessage && (
+          <div className="mt-6 flex items-start gap-2 text-rose-400 animate-in fade-in slide-in-from-bottom-2">
+            <span className="font-bold shrink-0">✕</span>
+            <div>
+              <span className="uppercase tracking-widest text-[10px] block">{errorMessage}</span>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-2 text-[10px] uppercase tracking-widest text-primary hover:text-primary/80 underline underline-offset-2 transition-colors"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isDone && !errorMessage && (
           <div className="mt-6 flex items-center gap-2 text-emerald-500 animate-in fade-in slide-in-from-bottom-2">
             <span className="font-bold">▶</span>
             <span className="uppercase tracking-widest text-[10px]">Analysis complete. Rendering UI...</span>

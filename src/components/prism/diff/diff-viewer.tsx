@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getHighlighter } from "@/lib/highlighter";
+import { getHighlighter, getSafeLanguage } from "@/lib/highlighter";
 import { cn } from "@/lib/utils";
 import type { FileDiff, DiffLine } from "@/data/mock-diff";
 import type { ThemedToken } from "shiki";
@@ -23,7 +23,7 @@ export function DiffViewer({ diff, mode }: DiffViewerProps) {
         // Just extract the raw code content to pass to Shiki
         const code = hunk.lines.map(l => l.content).join("\n");
         const tokens = highlighter.codeToTokensBase(code, {
-          lang: diff.language === "c" ? "c" : "typescript",
+          lang: getSafeLanguage(diff.language),
           theme: "github-dark-dimmed"
         });
         return tokens;
