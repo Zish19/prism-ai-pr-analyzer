@@ -53,7 +53,7 @@ export default function LandingPage() {
       <section className="relative min-h-dvh flex flex-col items-center justify-center pt-16 px-6 overflow-hidden">
         {/* Background Grid & Particles */}
         <motion.div 
-          className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none"
+          className="absolute inset-0 dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[linear-gradient(rgba(0,0,0,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.06)_1px,transparent_1px)] bg-[size:64px_64px] pointer-events-none"
           style={{ y }}
         />
         
@@ -222,7 +222,7 @@ export default function LandingPage() {
           CTA
           ------------------------------------------------------------- */}
       <section className="py-32 px-6 relative bg-primary/5 border-t border-primary/20 overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.1)_1px,transparent_1px)] bg-[size:32px_32px]" />
+        <div className="absolute inset-0 dark:bg-[linear-gradient(rgba(59,130,246,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.1)_1px,transparent_1px)] bg-[linear-gradient(rgba(59,130,246,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.2)_1px,transparent_1px)] bg-[size:32px_32px]" />
         
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-mono font-bold text-foreground mb-8">READY TO SECURE YOUR CODE?</h2>
@@ -251,9 +251,7 @@ export default function LandingPage() {
           <span>© 2026 PRISM AI. All rights reserved.</span>
         </div>
         <div className="flex gap-6 uppercase tracking-widest">
-          <Link href="#" className="hover:text-primary transition-colors">Twitter</Link>
-          <Link href="#" className="hover:text-primary transition-colors">GitHub</Link>
-          <Link href="#" className="hover:text-primary transition-colors">Terms</Link>
+          <Link href="https://github.com/Zish19" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">GitHub</Link>
         </div>
       </footer>
     </div>

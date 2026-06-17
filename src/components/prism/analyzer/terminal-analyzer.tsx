@@ -161,7 +161,7 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
 
   return (
     <div className="w-full max-w-lg bg-background border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono flex flex-col relative">
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+      <div className="absolute inset-0 dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[linear-gradient(rgba(0,0,0,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.05)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
       {/* Header */}
       <div className="flex items-center px-4 py-2 bg-secondary border-b border-border/50 relative z-10">
         <div className="flex gap-1.5">

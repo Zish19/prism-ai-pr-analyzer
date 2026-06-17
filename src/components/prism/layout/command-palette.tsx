@@ -54,7 +54,7 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
                 >
                   <Activity className="mr-3 size-3.5" />
                   <span>Run Analysis</span>
-                  <kbd className="ml-auto text-[9px] bg-[#0d0d12] border border-border/50 px-1 py-0.5 uppercase">Ctrl+Enter</kbd>
+                  <kbd className="ml-auto text-[9px] bg-secondary border border-border/50 px-1 py-0.5 uppercase">Ctrl+Enter</kbd>
                 </Command.Item>
                 <Command.Item 
                   onSelect={() => { onToggleDiff(); setOpen(false); }}
@@ -62,7 +62,7 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
                 >
                   <Columns className="mr-3 size-3.5" />
                   <span>Toggle Diff Mode (Unified/Split)</span>
-                  <kbd className="ml-auto text-[9px] bg-[#0d0d12] border border-border/50 px-1 py-0.5 uppercase">Ctrl+D</kbd>
+                  <kbd className="ml-auto text-[9px] bg-secondary border border-border/50 px-1 py-0.5 uppercase">Ctrl+D</kbd>
                 </Command.Item>
                 <Command.Item 
                   onSelect={() => { onToggleSidebar(); setOpen(false); }}
@@ -70,7 +70,7 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
                 >
                   <LayoutPanelLeft className="mr-3 size-3.5" />
                   <span>Toggle Sidebar</span>
-                  <kbd className="ml-auto text-[9px] bg-[#0d0d12] border border-border/50 px-1 py-0.5 uppercase">Ctrl+B</kbd>
+                  <kbd className="ml-auto text-[9px] bg-secondary border border-border/50 px-1 py-0.5 uppercase">Ctrl+B</kbd>
                 </Command.Item>
               </Command.Group>
             </Command.List>
