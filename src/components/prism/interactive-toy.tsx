@@ -40,13 +40,14 @@ export function InteractiveToy() {
     const width = containerRef.current.clientWidth;
     const height = 256; // h-64 = 256px
 
-    // Create walls (invisible boundaries)
+    // Create walls (invisible boundaries) with massive thickness to prevent tunneling
     const wallOptions = { isStatic: true, render: { visible: false } };
+    const wallThickness = 1000;
     const walls = [
-      Bodies.rectangle(width / 2, -50, width, 100, wallOptions), // top
-      Bodies.rectangle(width / 2, height + 50, width, 100, wallOptions), // bottom
-      Bodies.rectangle(-50, height / 2, 100, height, wallOptions), // left
-      Bodies.rectangle(width + 50, height / 2, 100, height, wallOptions) // right
+      Bodies.rectangle(width / 2, -wallThickness / 2, width * 2, wallThickness, wallOptions), // top
+      Bodies.rectangle(width / 2, height + wallThickness / 2, width * 2, wallThickness, wallOptions), // bottom
+      Bodies.rectangle(-wallThickness / 2, height / 2, wallThickness, height * 2, wallOptions), // left
+      Bodies.rectangle(width + wallThickness / 2, height / 2, wallThickness, height * 2, wallOptions) // right
     ];
     World.add(world, walls);
 
@@ -100,9 +101,9 @@ export function InteractiveToy() {
     const handleResize = () => {
       if (!containerRef.current) return;
       const newWidth = containerRef.current.clientWidth;
-      Matter.Body.setPosition(walls[3], { x: newWidth + 50, y: height / 2 });
-      Matter.Body.setPosition(walls[0], { x: newWidth / 2, y: -50 });
-      Matter.Body.setPosition(walls[1], { x: newWidth / 2, y: height + 50 });
+      Matter.Body.setPosition(walls[3], { x: newWidth + wallThickness / 2, y: height / 2 });
+      Matter.Body.setPosition(walls[0], { x: newWidth / 2, y: -wallThickness / 2 });
+      Matter.Body.setPosition(walls[1], { x: newWidth / 2, y: height + wallThickness / 2 });
     };
     window.addEventListener('resize', handleResize);
 
