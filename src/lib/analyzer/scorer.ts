@@ -39,22 +39,28 @@ export function generateReviewResult(allFindings: Finding[]): ReviewResult {
     quality: calculateDimensionScore(qualityFindings),
   };
 
-  let totalPenalty = 0;
-  for (const finding of allFindings) {
-    totalPenalty += SEVERITY_WEIGHTS[finding.severity];
-  }
+  const rawScore =
+    scores.security.score +
+    scores.performance.score +
+    scores.architecture.score +
+    scores.quality.score;
 
-  const finalScore = Math.min(totalPenalty, 100);
+  // Average of the 4 dimensions (0 to 100, where 100 is perfect)
+  const averageScore = Math.round(rawScore / 4);
+
+  // Risk Index is the inverse of the average score
+  const riskIndex = 100 - averageScore;
+
   const totalIssues = allFindings.length;
-  const mergeProbability = Math.max(0, 100 - finalScore);
+  const mergeProbability = averageScore;
 
   let summary = `Analysis complete. Found ${totalIssues} potential risks across ${allFindings.length ? new Set(allFindings.map(f => f.dimension)).size : 0} dimensions.`;
   
-  if (finalScore >= 71) {
+  if (riskIndex >= 71) {
     summary += " Critical risks detected; merging is highly discouraged without immediate remediation.";
-  } else if (finalScore >= 46) {
+  } else if (riskIndex >= 46) {
     summary += " Significant risks detected; thorough review recommended before merge.";
-  } else if (finalScore >= 21) {
+  } else if (riskIndex >= 21) {
     summary += " Moderate code smells detected. Consider addressing before merge.";
   } else {
     summary += " Code looks solid. Minimal risks detected.";
@@ -63,8 +69,8 @@ export function generateReviewResult(allFindings: Finding[]): ReviewResult {
   return {
     summary,
     mergeProbability,
-    riskScore: finalScore,
-    riskLevel: getRiskLevel(finalScore),
+    riskScore: riskIndex,
+    riskLevel: getRiskLevel(riskIndex),
     scores,
     totalIssues,
   };
