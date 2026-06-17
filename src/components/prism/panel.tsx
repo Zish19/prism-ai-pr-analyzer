@@ -8,7 +8,7 @@ import type { ReactNode } from "react";
 const panelVariants = cva(
   [
     "relative overflow-hidden",
-    "rounded-[0.75rem]",
+    "rounded-none",
     "prism-panel",
     "transition-all duration-200 ease-out",
   ].join(" "),

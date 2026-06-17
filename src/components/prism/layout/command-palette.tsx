@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Command } from "cmdk";
-import { Search, Play, Columns, LayoutPanelLeft, Download } from "lucide-react";
+import { Activity, Columns, LayoutPanelLeft } from "lucide-react";
+import * as Dialog from "@radix-ui/react-dialog";
 
 interface CommandPaletteProps {
   onAnalyze: () => void;
@@ -25,86 +26,57 @@ export function CommandPalette({ onAnalyze, onToggleDiff, onToggleSidebar }: Com
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] bg-background/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-xl bg-card border border-border shadow-2xl rounded-xl overflow-hidden animate-in zoom-in-95 duration-200">
-        <Command
-          className="w-full"
-          loop
-          onKeyDown={(e) => {
-            if (e.key === "Escape") {
-              setOpen(false);
-            }
-          }}
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-all" />
+        <Dialog.Content 
+          className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh] outline-none"
         >
-          <div className="flex items-center border-b border-border px-4">
-            <Search className="size-4 text-muted-foreground mr-2 shrink-0" />
+          <Command 
+            className="w-full max-w-lg bg-[#0a0b0f] border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono"
+            label="Command Menu"
+          >
             <Command.Input 
-              autoFocus 
-              className="flex h-12 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground" 
               placeholder="Type a command or search..." 
+              className="w-full bg-[#0d0d12] border-b border-border/50 px-4 py-4 text-xs outline-none placeholder:text-muted-foreground font-mono text-foreground uppercase tracking-widest"
+              autoFocus
             />
-          </div>
-
-          <Command.List className="max-h-[300px] overflow-y-auto p-2">
-            <Command.Empty className="py-6 text-center text-sm text-muted-foreground">
-              No results found.
-            </Command.Empty>
-
-            <Command.Group heading="Actions" className="px-2 text-xs font-medium text-muted-foreground mb-2 mt-2">
-              <Command.Item 
-                onSelect={() => { onAnalyze(); setOpen(false); }}
-                className="flex items-center gap-2 px-2 py-2.5 rounded-md cursor-pointer text-sm text-foreground hover:bg-secondary aria-selected:bg-secondary transition-colors"
-              >
-                <Play className="size-4 text-primary" />
-                Analyze Pull Request
-                <div className="ml-auto flex gap-1">
-                  <kbd className="bg-background border border-border rounded px-1.5 font-mono text-[10px]">Ctrl</kbd>
-                  <kbd className="bg-background border border-border rounded px-1.5 font-mono text-[10px]">Enter</kbd>
-                </div>
-              </Command.Item>
-            </Command.Group>
-
-            <Command.Group heading="View" className="px-2 text-xs font-medium text-muted-foreground mb-2 mt-2">
-              <Command.Item 
-                onSelect={() => { onToggleDiff(); setOpen(false); }}
-                className="flex items-center gap-2 px-2 py-2.5 rounded-md cursor-pointer text-sm text-foreground hover:bg-secondary aria-selected:bg-secondary transition-colors"
-              >
-                <Columns className="size-4 text-muted-foreground" />
-                Toggle Diff Mode (Unified/Split)
-                <div className="ml-auto flex gap-1">
-                  <kbd className="bg-background border border-border rounded px-1.5 font-mono text-[10px]">Ctrl</kbd>
-                  <kbd className="bg-background border border-border rounded px-1.5 font-mono text-[10px]">D</kbd>
-                </div>
-              </Command.Item>
-              <Command.Item 
-                onSelect={() => { onToggleSidebar(); setOpen(false); }}
-                className="flex items-center gap-2 px-2 py-2.5 rounded-md cursor-pointer text-sm text-foreground hover:bg-secondary aria-selected:bg-secondary transition-colors"
-              >
-                <LayoutPanelLeft className="size-4 text-muted-foreground" />
-                Toggle Sidebar
-                <div className="ml-auto flex gap-1">
-                  <kbd className="bg-background border border-border rounded px-1.5 font-mono text-[10px]">Ctrl</kbd>
-                  <kbd className="bg-background border border-border rounded px-1.5 font-mono text-[10px]">B</kbd>
-                </div>
-              </Command.Item>
-            </Command.Group>
-
-            <Command.Group heading="Export" className="px-2 text-xs font-medium text-muted-foreground mb-2 mt-2">
-              <Command.Item 
-                onSelect={() => { setOpen(false); alert("Exporting report..."); }}
-                className="flex items-center gap-2 px-2 py-2.5 rounded-md cursor-pointer text-sm text-foreground hover:bg-secondary aria-selected:bg-secondary transition-colors"
-              >
-                <Download className="size-4 text-emerald-500" />
-                Export Review Report
-              </Command.Item>
-            </Command.Group>
-
-          </Command.List>
-        </Command>
-      </div>
-    </div>
+            <Command.List className="max-h-[300px] overflow-y-auto p-2">
+              <Command.Empty className="py-6 text-center text-[10px] uppercase tracking-widest text-muted-foreground font-mono">
+                No results found.
+              </Command.Empty>
+              
+              <Command.Group heading={<span className="text-[10px] font-mono tracking-widest uppercase text-muted-foreground px-2 py-2 block border-b border-border/30 mb-1">Actions</span>}>
+                <Command.Item 
+                  onSelect={() => { onAnalyze(); setOpen(false); }}
+                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-[#12131a] data-[selected=true]:text-emerald-500 font-mono transition-colors"
+                >
+                  <Activity className="mr-3 size-3.5" />
+                  <span>Run Analysis</span>
+                  <kbd className="ml-auto text-[9px] bg-[#0d0d12] border border-border/50 px-1 py-0.5 uppercase">Ctrl+Enter</kbd>
+                </Command.Item>
+                <Command.Item 
+                  onSelect={() => { onToggleDiff(); setOpen(false); }}
+                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-[#12131a] data-[selected=true]:text-foreground font-mono transition-colors"
+                >
+                  <Columns className="mr-3 size-3.5" />
+                  <span>Toggle Diff Mode (Unified/Split)</span>
+                  <kbd className="ml-auto text-[9px] bg-[#0d0d12] border border-border/50 px-1 py-0.5 uppercase">Ctrl+D</kbd>
+                </Command.Item>
+                <Command.Item 
+                  onSelect={() => { onToggleSidebar(); setOpen(false); }}
+                  className="flex items-center px-2 py-3 text-[10px] uppercase tracking-widest rounded-none cursor-pointer data-[selected=true]:bg-[#12131a] data-[selected=true]:text-foreground font-mono transition-colors"
+                >
+                  <LayoutPanelLeft className="mr-3 size-3.5" />
+                  <span>Toggle Sidebar</span>
+                  <kbd className="ml-auto text-[9px] bg-[#0d0d12] border border-border/50 px-1 py-0.5 uppercase">Ctrl+B</kbd>
+                </Command.Item>
+              </Command.Group>
+            </Command.List>
+          </Command>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

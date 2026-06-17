@@ -3,7 +3,6 @@
 import { motion } from "motion/react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Panel } from "@/components/prism/panel";
 
 interface MetricCardProps {
   icon: LucideIcon;
@@ -17,7 +16,7 @@ interface MetricCardProps {
   className?: string;
 }
 
-const accentMap = {
+const accentClasses = {
   blue: "text-[var(--prism-blue)]",
   success: "text-[var(--prism-success)]",
   warning: "text-[var(--prism-warning)]",
@@ -25,33 +24,10 @@ const accentMap = {
   muted: "text-muted-foreground",
 } as const;
 
-const accentBgMap = {
-  blue: "bg-[var(--prism-blue)]/10",
-  success: "bg-[var(--prism-success)]/10",
-  warning: "bg-[var(--prism-warning)]/10",
-  danger: "bg-[var(--prism-danger)]/10",
-  muted: "bg-muted",
-} as const;
-
-const trendIcons = {
-  up: "↑",
-  down: "↓",
-  neutral: "→",
-} as const;
-
-const trendColors = {
-  up: "text-[var(--prism-success)]",
-  down: "text-[var(--prism-danger)]",
-  neutral: "text-muted-foreground",
-} as const;
-
 export function MetricCard({
   icon: Icon,
   label,
   value,
-  subtitle,
-  trend,
-  trendValue,
   accentColor = "blue",
   delay = 0,
   className,
@@ -63,47 +39,28 @@ export function MetricCard({
       transition={{
         duration: 0.4,
         delay,
-        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+        ease: [0.16, 1, 0.3, 1],
       }}
       className={className}
     >
-      <Panel
-        variant="interactive"
-        padding="default"
-        animate={false}
-        className="group h-full flex flex-col"
-      >
-        <div className="flex items-start justify-between">
-          <div
+      <div className="bg-[#0d0d12] p-4 flex flex-col justify-between min-h-[90px] border-b border-r border-transparent hover:border-border/50 hover:bg-[#12131a] transition-all relative overflow-hidden group rounded-none">
+        <div className="flex justify-between items-start">
+          <Icon
+            className={cn("size-4 opacity-70", accentClasses[accentColor])}
+          />
+          <span
             className={cn(
-              "flex size-9 items-center justify-center rounded-lg",
-              accentBgMap[accentColor]
+              "text-xl font-mono font-bold tracking-tighter",
+              accentClasses[accentColor]
             )}
           >
-            <Icon className={cn("size-4.5", accentMap[accentColor])} />
-          </div>
-
-          {trend && (
-            <span
-              className={cn(
-                "flex items-center gap-0.5 text-xs font-medium",
-                trendColors[trend]
-              )}
-            >
-              {trendIcons[trend]}
-              {trendValue && <span>{trendValue}</span>}
-            </span>
-          )}
+            {value}
+          </span>
         </div>
-
-        <div className="mt-4 space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <p className="text-2xl font-semibold tracking-tight">{value}</p>
-          {subtitle && (
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
-          )}
-        </div>
-      </Panel>
+        <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors mt-4">
+          {label}
+        </span>
+      </div>
     </motion.div>
   );
 }

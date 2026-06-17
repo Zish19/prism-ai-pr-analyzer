@@ -32,6 +32,7 @@ export interface PRMetadata {
   deletions: number;
   commits: number;
   createdAt: string;
+  files?: any[];
 }
 
 export interface MockReview {

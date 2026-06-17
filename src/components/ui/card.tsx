@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
    Card variants (CVA)
    -------------------------------------------------------------------------- */
 const cardVariants = cva(
-  "rounded-[1rem] transition-all duration-300 ease-out",
+  "rounded-none transition-all duration-300 ease-out",
   {
     variants: {
       variant: {
@@ -65,7 +65,7 @@ function CardTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) 
   return (
     <h3
       data-slot="card-title"
-      className={cn("text-lg font-semibold leading-tight tracking-tight", className)}
+      className={cn("text-sm font-mono uppercase tracking-widest text-primary leading-tight", className)}
       {...props}
     />
   );

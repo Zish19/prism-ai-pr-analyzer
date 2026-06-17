@@ -42,7 +42,7 @@ export function DiffViewer({ diff, mode }: DiffViewerProps) {
         <div className="flex items-center h-10 px-4 bg-[#12131a] border-b border-border/50 text-sm font-mono text-muted-foreground shadow-sm">
           {diff.path}
         </div>
-        <div className="h-32 bg-[#12131a]/30 m-4 rounded"></div>
+        <div className="h-32 bg-[#12131a]/30 m-4 rounded-none"></div>
       </div>
     );
   }

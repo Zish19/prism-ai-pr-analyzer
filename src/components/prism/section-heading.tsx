@@ -38,7 +38,7 @@ export function SectionHeading({
       {accentLine && (
         <div
           className={cn(
-            "h-0.5 w-10 bg-primary/80 rounded-full",
+            "h-0.5 w-10 bg-primary/80 rounded-none",
             align === "center" && "mx-auto"
           )}
         />

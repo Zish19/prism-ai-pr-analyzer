@@ -1,30 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Terminal, X, Minimize2, Maximize2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Terminal, Circle, Loader2, CheckCircle2 } from "lucide-react";
 
 interface TerminalAnalyzerProps {
   prUrl: string;
   onComplete: () => void;
 }
 
-type Step = {
-  text: string;
-  status: "pending" | "running" | "done" | "error";
-  result?: string;
-  resultClass?: string;
-};
-
 export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
-  const [steps, setSteps] = useState<Step[]>([
-    { text: "Fetching metadata...", status: "pending" },
-    { text: "Running security agent...", status: "pending" },
-    { text: "Running performance agent...", status: "pending" },
-    { text: "Computing score...", status: "pending" },
+  const [currentStep, setCurrentStep] = useState(0);
+  const [steps, setSteps] = useState([
+    { id: 1, label: "Fetching Metadata", status: "pending", result: "", resultClass: "" },
+    { id: 2, label: "Security Analysis", status: "pending", result: "", resultClass: "" },
+    { id: 3, label: "Performance Profile", status: "pending", result: "", resultClass: "" },
+    { id: 4, label: "Scoring Engine", status: "pending", result: "", resultClass: "" }
   ]);
-  const [currentStep, setCurrentStep] = useState(-1);
   const [isDone, setIsDone] = useState(false);
 
   useEffect(() => {
@@ -79,92 +70,66 @@ export function TerminalAnalyzer({ prUrl, onComplete }: TerminalAnalyzerProps) {
   const prId = prUrl.match(/\/pull\/(\d+)/)?.[1] || "31336";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 1.05, filter: "blur(4px)" }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="w-full max-w-2xl mx-auto rounded-xl overflow-hidden border border-border shadow-2xl bg-[#0a0b0f] font-mono text-sm"
-    >
-      {/* Terminal Header */}
-      <div className="flex items-center px-4 py-3 bg-[#12131a] border-b border-border/50">
-        <div className="flex gap-2 mr-4">
-          <div className="size-3 rounded-full bg-rose-500/80" />
-          <div className="size-3 rounded-full bg-amber-500/80" />
-          <div className="size-3 rounded-full bg-emerald-500/80" />
+    <div className="w-full max-w-lg bg-[#0a0b0f] border border-border/50 rounded-none shadow-2xl overflow-hidden font-mono flex flex-col relative">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+      {/* Header */}
+      <div className="flex items-center px-4 py-2 bg-[#0d0d12] border-b border-border/50 relative z-10">
+        <div className="flex gap-1.5">
+          <div className="size-2 rounded-none bg-border/50" />
+          <div className="size-2 rounded-none bg-border/50" />
+          <div className="size-2 rounded-none bg-border/50" />
         </div>
-        <div className="flex-1 flex justify-center text-xs text-muted-foreground font-medium flex items-center gap-2">
+        <div className="mx-auto text-[10px] text-muted-foreground uppercase tracking-widest flex items-center gap-2">
           <Terminal className="size-3" />
-          prism-analyzer
-        </div>
-        <div className="flex gap-3 text-muted-foreground ml-4 opacity-50">
-          <Minimize2 className="size-3" />
-          <Maximize2 className="size-3" />
-          <X className="size-3" />
+          prism-ai --analyze {prId}
         </div>
       </div>
 
-      {/* Terminal Body */}
-      <div className="p-6 h-[280px] text-[#e4e4e8] overflow-hidden relative">
-        <div className="space-y-3">
-          <div>
-            <span className="text-emerald-400 mr-2">$</span>
-            <span className="text-white font-medium">prism analyze pr-{prId}</span>
-          </div>
-          
-          <AnimatePresence>
-            {currentStep >= 0 && steps.map((step, idx) => {
-              if (idx > currentStep) return null;
-              
-              return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -5 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center"
-                >
-                  {step.status === "running" ? (
-                    <span className="text-primary mr-2 animate-pulse">⠋</span>
-                  ) : (
-                    <span className="text-emerald-400 mr-2">✓</span>
-                  )}
-                  <span className={step.status === "running" ? "text-muted-foreground" : ""}>
-                    {step.text}
-                  </span>
-                  
-                  {step.result && (
-                    <motion.span 
-                      initial={{ opacity: 0 }} 
-                      animate={{ opacity: 1 }}
-                      className={cn("ml-2", step.resultClass || "text-[#6b7280]")}
-                    >
-                      {step.result}
-                    </motion.span>
-                  )}
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-          
-          {isDone && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              <span className="text-emerald-400 mr-2">$</span>
-              <span className="animate-pulse">_</span>
-            </motion.div>
-          )}
+      {/* Body */}
+      <div className="p-5 text-xs text-[#a1a1aa] min-h-[260px] relative z-10">
+        <div className="flex items-center gap-2 mb-4 text-emerald-500">
+          <span className="font-bold">▶</span>
+          <span className="uppercase tracking-widest text-[10px]">Initializing AI agents for {prId}...</span>
         </div>
-        
-        {/* Subtle grid background for terminal */}
-        <div className="absolute inset-0 pointer-events-none" style={{ 
-          backgroundImage: "linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px)",
-          backgroundSize: "100% 24px",
-          zIndex: 0
-        }} />
+
+        <div className="space-y-4 ml-2 border-l border-border/30 pl-4">
+          {steps.map((step, idx) => (
+            <div key={step.id} className={`transition-opacity duration-300 ${idx > currentStep ? "opacity-0" : "opacity-100"}`}>
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5">
+                  {step.status === "pending" && <Circle className="size-3 text-muted-foreground/30" />}
+                  {step.status === "running" && <Loader2 className="size-3 text-primary animate-spin" />}
+                  {step.status === "done" && <CheckCircle2 className="size-3 text-emerald-500" />}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <span className={step.status === "running" ? "text-foreground font-bold uppercase tracking-wider text-[10px]" : "uppercase tracking-wider text-[10px]"}>
+                      {step.label}
+                    </span>
+                    {step.result && (
+                      <span className={`font-bold uppercase tracking-wider text-[10px] ${step.resultClass || ""}`}>
+                        [{step.result}]
+                      </span>
+                    )}
+                  </div>
+                  {step.status === "running" && (
+                    <div className="h-0.5 w-full bg-secondary mt-2 overflow-hidden rounded-none">
+                      <div className="h-full bg-primary w-1/2 animate-[pulse_1s_ease-in-out_infinite]" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {isDone && (
+          <div className="mt-6 flex items-center gap-2 text-emerald-500 animate-in fade-in slide-in-from-bottom-2">
+            <span className="font-bold">▶</span>
+            <span className="uppercase tracking-widest text-[10px]">Analysis complete. Rendering UI...</span>
+          </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 }
