@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { Activity, GitPullRequest, LayoutPanelLeft, Columns, Rows, Menu } from "lucide-react";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { BRAND } from "@/constants/brand";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { UserButton } from "@clerk/nextjs";
 import type { PRMetadata } from "@/data/mock-review";
-import { MOCK_DIFF, MOCK_HEADER_DIFF } from "@/data/mock-diff";
 import type { FileDiff } from "@/data/mock-diff";
 
 import { Sidebar } from "@/components/prism/layout/sidebar";
@@ -18,37 +17,13 @@ import { TerminalAnalyzer } from "@/components/prism/analyzer/terminal-analyzer"
 import { CommandPalette } from "@/components/prism/layout/command-palette";
 import { MobileDrawer } from "@/components/prism/layout/mobile-drawer";
 import { BlueprintCrosshair } from "@/components/prism/blueprint-crosshair";
-import { SplashScreen } from "@/components/prism/splash-screen";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { analyzeDiffs } from "@/lib/analyzer/scoring";
 import type { ReviewResult } from "@/lib/analyzer/types";
 
-// Demo PR metadata for the "Try Demo" button
-const DEMO_PR: PRMetadata = {
-  number: 31336,
-  title: "Add utility APIs for HPKE suite introspection",
-  repo: "openssl/openssl",
-  author: "Zish19",
-  authorAvatar: "https://avatars.githubusercontent.com/u/1?v=4",
-  baseBranch: "master",
-  headBranch: "hpke-suite-utils",
-  status: "open",
-  filesChanged: 5,
-  additions: 287,
-  deletions: 12,
-  commits: 3,
-  createdAt: "2025-06-14",
-  files: [
-    { name: "crypto/hpke/hpke_util.c", additions: 184, deletions: 0 },
-    { name: "include/openssl/hpke.h", additions: 28, deletions: 4 },
-  ],
-};
-
 type AnalyzerState = "idle" | "analyzing" | "done";
 
-export default function AppHome() {
-  const [showSplash, setShowSplash] = useState(true);
-
+export default function Dashboard() {
   // PR data state — starts null (no PR loaded)
   const [prData, setPrData] = useState<PRMetadata | null>(null);
   const [diffs, setDiffs] = useState<FileDiff[]>([]);
@@ -69,18 +44,6 @@ export default function AppHome() {
     if (!prUrl.trim()) return;
     setAnalyzerState("analyzing");
   }, [analyzerState, prUrl]);
-
-  // Demo mode: load hardcoded mock data
-  const handleTryDemo = useCallback(() => {
-    setPrUrl("https://github.com/openssl/openssl/pull/31336");
-    setPrData(DEMO_PR);
-    setDiffs([MOCK_DIFF, MOCK_HEADER_DIFF]);
-    
-    // Run the analyzer on demo data
-    const result = analyzeDiffs([MOCK_DIFF, MOCK_HEADER_DIFF]);
-    setReviewResult(result);
-    setAnalyzerState("done");
-  }, []);
 
   // Global Keyboard Shortcuts
   useEffect(() => {
@@ -127,14 +90,8 @@ export default function AppHome() {
 
   // Display data
   const displayPr = prData;
-  const displayAuthor = displayPr?.author || "User";
-  const displayAvatar = displayPr?.authorAvatar || "https://avatars.githubusercontent.com/u/1?v=4";
   const displayRepo = displayPr?.repo || "—";
   const displayNumber = displayPr?.number || 0;
-
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />;
-  }
 
   return (
     <div className="flex h-dvh flex-col bg-[#0a0b0f] text-foreground overflow-hidden font-sans selection:bg-primary/30">
@@ -196,11 +153,8 @@ export default function AppHome() {
           )}
 
           <div className="h-6 w-px bg-border/50 hidden sm:block" />
-          <div className="flex items-center gap-2 text-xs font-mono">
-            <div className="relative size-6 overflow-hidden bg-secondary rounded-none border border-border/50 grayscale hover:grayscale-0 transition-all">
-              <Image src={displayAvatar} alt={displayAuthor} fill className="object-cover" />
-            </div>
-            <span className="text-muted-foreground hidden sm:inline-block uppercase tracking-wider">{displayAuthor}</span>
+          <div className="flex items-center gap-2">
+            <UserButton />
           </div>
         </div>
       </header>
@@ -223,7 +177,7 @@ export default function AppHome() {
           {isDesktop && sidebarOpen && (
             <>
               <Panel id="sidebar" order={1} defaultSize={22} minSize={15} maxSize={40} className="relative bg-[#0a0b0f]">
-                <Sidebar pr={displayPr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} onTryDemo={handleTryDemo} />
+                <Sidebar pr={displayPr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} />
               </Panel>
               <PanelResizeHandle className="w-[1px] bg-border hover:bg-primary/50 transition-colors cursor-col-resize relative flex flex-col justify-center items-center">
                 <BlueprintCrosshair className="opacity-50 top-10" />
@@ -293,21 +247,6 @@ export default function AppHome() {
                         and press <kbd className="text-foreground font-bold">Ctrl+Enter</kbd> to begin analysis.
                       </p>
                     </div>
-                    
-                    <div className="flex items-center gap-3 pt-4">
-                      <div className="h-px w-12 bg-border/20" />
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/30">or</span>
-                      <div className="h-px w-12 bg-border/20" />
-                    </div>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-none font-mono uppercase tracking-wider text-[10px] border-border/50 bg-[#12131a] hover:bg-primary hover:text-primary-foreground transition-colors h-9 px-6"
-                      onClick={handleTryDemo}
-                    >
-                      Load Demo PR
-                    </Button>
                   </div>
                 )}
               </div>
@@ -330,7 +269,7 @@ export default function AppHome() {
 
         {/* Mobile Drawers */}
         <MobileDrawer open={sidebarOpen && !isDesktop} onOpenChange={setSidebarOpen} direction="left">
-          <Sidebar pr={displayPr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} onTryDemo={handleTryDemo} />
+          <Sidebar pr={displayPr} prUrl={prUrl} onPrUrlChange={setPrUrl} onAnalyze={handleAnalyze} />
         </MobileDrawer>
 
         {reviewResult && (

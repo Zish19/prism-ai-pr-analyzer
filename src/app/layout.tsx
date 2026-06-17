@@ -1,3 +1,4 @@
+import { ClerkProvider } from '@clerk/nextjs'
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -58,14 +59,37 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} dark`}
-      suppressHydrationWarning
+    <ClerkProvider
+      appearance={{
+        variables: {
+          colorPrimary: '#3B82F6',
+          colorBackground: '#0a0b0f',
+          fontFamily: 'var(--font-geist-sans)',
+        },
+        elements: {
+          card: 'bg-[#12131a] border border-[#1e2028] rounded-none',
+          formButtonPrimary: 'bg-[#3B82F6] hover:bg-[#2563eb] rounded-none text-white font-mono uppercase tracking-wider',
+          formFieldInput: 'bg-[#0a0b0f] border-[#1e2028] rounded-none font-mono text-white focus:ring-[#3B82F6]',
+          footerActionLink: 'text-[#3B82F6] hover:text-[#2563eb] font-mono',
+          headerTitle: 'font-mono uppercase tracking-widest text-white',
+          headerSubtitle: 'font-mono text-muted-foreground',
+          socialButtonsBlockButton: 'border-[#1e2028] hover:bg-[#1a1b24] rounded-none text-white',
+          socialButtonsBlockButtonText: 'font-mono text-white',
+          dividerText: 'text-muted-foreground font-mono',
+          dividerLine: 'bg-[#1e2028]',
+          userButtonAvatarBox: 'rounded-none border border-[#1e2028]',
+        }
+      }}
     >
-      <body className="min-h-dvh antialiased">
-        {children}
-      </body>
-    </html>
+      <html
+        lang="en"
+        className={`${geistSans.variable} ${geistMono.variable} dark`}
+        suppressHydrationWarning
+      >
+        <body className="min-h-dvh antialiased">
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

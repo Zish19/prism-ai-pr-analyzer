@@ -10,10 +10,9 @@ interface SidebarProps {
   prUrl: string;
   onPrUrlChange: (url: string) => void;
   onAnalyze: () => void;
-  onTryDemo: () => void;
 }
 
-export function Sidebar({ pr, prUrl, onPrUrlChange, onAnalyze, onTryDemo }: SidebarProps) {
+export function Sidebar({ pr, prUrl, onPrUrlChange, onAnalyze }: SidebarProps) {
   return (
     <div className="flex h-full flex-col bg-[#0a0b0f] relative">
       <div className="p-4 border-b border-border/50 bg-[#0d0d12]">
@@ -100,22 +99,6 @@ export function Sidebar({ pr, prUrl, onPrUrlChange, onAnalyze, onTryDemo }: Side
               <p className="text-[10px] font-mono text-muted-foreground/60 max-w-[200px] leading-relaxed">
                 Paste a public GitHub PR URL above and click Analyze to begin.
               </p>
-            </div>
-
-            <div className="w-full space-y-2 pt-2">
-              <div className="flex items-center gap-2">
-                <div className="h-px flex-1 bg-border/30" />
-                <span className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground/40">or</span>
-                <div className="h-px flex-1 bg-border/30" />
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full h-8 rounded-none font-mono uppercase tracking-wider text-[10px] border-border/50 bg-[#12131a] hover:bg-primary hover:text-primary-foreground transition-colors"
-                onClick={onTryDemo}
-              >
-                Try Demo PR
-              </Button>
             </div>
           </div>
         )}

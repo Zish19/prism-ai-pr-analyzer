@@ -51,7 +51,7 @@ export const MOCK_PR: PRMetadata = {
   number: 31336,
   title: "Add utility APIs for HPKE suite introspection",
   repo: "openssl/openssl",
-  author: "Zish19",
+  author: "contributor",
   authorAvatar: "https://avatars.githubusercontent.com/u/1?v=4",
   baseBranch: "master",
   headBranch: "hpke-suite-utils",

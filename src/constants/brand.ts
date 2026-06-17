@@ -1,10 +1,10 @@
 export const BRAND = {
-  name: "PRISM",
+  name: "PRISM AI",
   shortName: "PRISM",
-  description: "AI-Powered Pull Request Intelligence",
+  description: "AI-powered pull request analysis platform",
   accentColor: "#3B82F6",
   theme: "dark",
-  url: "https://github.com/Zish19/prism-ai-pr-analyzer",
+  url: "https://github.com/prism-ai-pr-analyzer",
   author: "PRISM Team",
 } as const;
 
